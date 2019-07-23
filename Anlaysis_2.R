@@ -26,6 +26,9 @@ ggbarplot(data, x = "country", y = "nkill",
           palette = "jco",            # jco journal color palett. see ?ggpar
           sort.val = "desc",          # Sort the value in dscending order
           sort.by.groups = FALSE,     # Don't sort inside each group
-          x.text.angle = 90           # Rotate vertically x axis texts)
-
-          
+          x.text.angle = 90           # Rotate vertically x axis texts
+          )
+plot_str(data)
+plot_missing(data)
+plot_histogram(data)
+plot_correlation(data, type = 'continuous','iyear')
