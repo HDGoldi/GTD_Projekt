@@ -9,5 +9,7 @@ shinyServer(function(input, output) {
     output$datatable <- DT::renderDataTable({
         data
     })
+    
+   # output$corrleation <- plot_correlation(data, type = 'continuous','iyear')
 
 })
