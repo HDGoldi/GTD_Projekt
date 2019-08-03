@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(DT)
 library(shinycssloaders)
+library(markdown)
 
 header <- dashboardHeader(
     title = "Global Terrorism"
@@ -57,15 +58,19 @@ body <- dashboardBody(
                         title = "Killings",
                         tabPanel("Year",
                                  h3("Overall killings per Year"),
-                                 withSpinner(plotOutput('killings1'))
+                                 withSpinner(plotOutput('killings1')),
+                                 includeMarkdown("killings1.md")
+                                 
                         ),
                         tabPanel("Country",
                                  h3("Overall killings per Country"),
-                                 withSpinner(plotOutput('killings2'))
+                                 withSpinner(plotOutput('killings2')),
+                                 includeMarkdown("killings2.md")
                         ),
                         tabPanel("Countries and Years",
                                  h3("Killings per Countries and Years - size is proportional with the number of killings"),
-                                 withSpinner(plotOutput('killings3'))
+                                 withSpinner(plotOutput('killings3')),
+                                 includeMarkdown("killings3.md")
                         )
                     )  
                 )
