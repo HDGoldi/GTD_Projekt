@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(DT)
+library(shinycssloaders)
 
 
 header <- dashboardHeader(
@@ -55,12 +56,17 @@ body <- dashboardBody(
                 fluidRow(
                     tabBox(
                         title = "Killings",
-                        tabPanel("Countries and Years",
-                                 h3("Killings per countries and years plus adding number of killed and wounded people"),
-                                 plotOutput('killings1')
+                        tabPanel("Year",
+                                 h3("Overall killings in Global Terrorism"),
+                                 plotOutput('killings1')%>% withSpinner(color="#0dc5c1")
                         ),
-                        tabPanel("Cleand Dataset",
-                                 h3("Total of 33 variables with cleaned data and just a few missing values")
+                        tabPanel("Country",
+                                 h3("Overall killings in Global Terrorism"),
+                                 plotOutput('killings2')%>% withSpinner(color="#0dc5c1")
+                        ),
+                        tabPanel("Countries and Years",
+                                 h3("Killings in Global terrorism  (Countries/Years) - size is proportional with the number of killings"),
+                                 plotOutput('killings3')%>% withSpinner(color="#0dc5c1")
                         )
                     )  
                 )

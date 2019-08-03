@@ -93,6 +93,15 @@ df2 <- inner_join(df, popworld, by= c("year" = "Time"))
 
 
 data_lite %>% filter(nkill > 0) -> dfk
+
+treemap(dfk, 
+        index=c("country"), 
+        vSize = "nkill",  
+        palette = "Reds",  
+        title="Killings in Global Terrorism", 
+        fontsize.title = 14 
+)
+
 treemap(
   dfk,
   #Your data frame object
@@ -104,4 +113,13 @@ treemap(
   title = "Killings in Global terrorism  (Countries/Years) - size is proportional with the number of killings",
   title.legend = "Number of wounded",
   fontsize.title = 10
+)
+
+
+treemap(dfk, 
+        index=c("iyear"), 
+        vSize = "nkill",  
+        palette = "Reds",  
+        title="Killings in Global Terrorism", 
+        fontsize.title = 14 
 )

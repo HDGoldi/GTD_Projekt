@@ -9,6 +9,8 @@ require(dplyr)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+    
+    data_lite <- read.csv("../gtd_lite2.csv")
     output$data_explorer <- DT::renderDataTable({
         data_lite
     })
@@ -42,6 +44,27 @@ shinyServer(function(input, output) {
     }, deleteFile = FALSE)
     
     output$killings1 <- renderPlot({
+        data_lite %>% filter(nkill > 0) -> dfk
+        treemap(dfk, 
+                index=c("iyear"), 
+                vSize = "nkill",  
+                palette = "Reds",  
+                fontsize.title = 14 
+        )
+    })
+    
+    output$killings2 <- renderPlot({
+        data_lite %>% filter(nkill > 0) -> dfk
+        treemap(dfk, 
+                index=c("country"), 
+                vSize = "nkill",  
+                palette = "Reds",  
+                fontsize.title = 14 
+        )
+    })
+    
+    output$killings3 <- renderPlot({
+        data_lite %>% filter(nkill > 0) -> dfk
         treemap(
             dfk,
             #Your data frame object
@@ -50,7 +73,6 @@ shinyServer(function(input, output) {
             vSize = "nkill",
             vColor = "nwound",
             palette = "RdBu",
-            title = "Killings in Global terrorism  (Countries/Years) - size is proportional with the number of killings",
             title.legend = "Number of wounded",
             fontsize.title = 10
         )
