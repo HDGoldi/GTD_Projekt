@@ -1,4 +1,6 @@
 data <- read.csv("gtd_lite.csv")
+data_lite <- read.csv("gtd_lite2.csv")
+
 head(data, 10)
 dim(data)
 library(dplyr)
