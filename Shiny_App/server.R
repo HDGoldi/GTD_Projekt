@@ -24,7 +24,7 @@ shinyServer(function(input, output) {
             '../files',
             paste('raw_missing', input$n, '.png', sep =
                       '')
-        ))
+         ))
         
         # Return a list containing the filename
         list(src = filename)
