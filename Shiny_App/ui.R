@@ -56,15 +56,15 @@ body <- dashboardBody(
                     tabBox(
                         title = "Killings",
                         tabPanel("Year",
-                                 h3("Overall killings in Global Terrorism"),
+                                 h3("Overall killings per Year"),
                                  withSpinner(plotOutput('killings1'))
                         ),
                         tabPanel("Country",
-                                 h3("Overall killings in Global Terrorism"),
+                                 h3("Overall killings per Country"),
                                  withSpinner(plotOutput('killings2'))
                         ),
                         tabPanel("Countries and Years",
-                                 h3("Killings in Global terrorism  (Countries/Years) - size is proportional with the number of killings"),
+                                 h3("Killings per Countries and Years - size is proportional with the number of killings"),
                                  withSpinner(plotOutput('killings3'))
                         )
                     )  
