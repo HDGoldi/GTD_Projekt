@@ -1,26 +1,146 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
+library(shinydashboard)
+library(DT)
 
-# Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+library(shiny)
+library(shinyWidgets)
+library(ggplot2)
+library(leaflet)
+library(plotly)
+library(htmltools)
 
-    output$distPlot <- renderPlot({
-
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+shinyServer(function(input, output, session) {
+    
+    gtd <- read.csv("./Data/gtd_lite2.csv")
+    data_loaded <- FALSE
+    #gtd_uk <- gtd[gtd$country == "United Kingdom",]
+    #gtd_eu <- gtd[gtd$region == "Western Europe",]
+    
+    
+    #data explorer UI
+    output$regionSelection <- renderUI({
+        pickerInput('region', label = 'Region', choices = unique(as.character(gtd$region)), options = list(`actions-box` = TRUE), multiple = TRUE, selected = unique(gtd$region))
+    })
+    
+    output$countrySelection <- renderUI({
+        pickerInput('country', 'Country', choices = unique(as.character(gtd$country)),  options = list(`actions-box` = TRUE), multiple = TRUE, selected = unique(gtd$country))
+    })
+    
+    output$attackSelection <- renderUI({
+        pickerInput('attack', label = 'Attack Type', choices = unique(as.character(gtd$attacktype)), options = list(`actions-box` = TRUE), multiple = TRUE, selected = unique(gtd$attacktype))
+    })
+    
+      
+    plot_gtdsub <- reactive({
+        #showModal(modalDialog("Loading Data...", size = "l"))
+        
+        #filter for selected regions
+        gtd_sub <- gtd[gtd$region %in% input$region,]
+        
+        #filter for selected countries
+        gtd_sub <- gtd_sub[gtd_sub$country %in% input$country,]
+        
+        #filter for selected attack types
+        gtd_sub <- gtd_sub[gtd_sub$attacktype %in% input$attack,]
+        
+        #filter for selected time period
+        gtd_sub <- subset(gtd_sub, gtd_sub$iyear >= input$year[1] &  gtd_sub$iyear <= input$year[2])
+        
+        #removeModal()
+    })
+    
+   
+    observe({
+        input$region
+        sel <- unique(gtd[gtd$region == input$region, "country"])
+        updateSelectInput(session = session, inputId = "country", choices = sel, selected = sel)
     })
 
+    output$datatable <- DT::renderDataTable({
+      plot_gtdsub()
+    }) 
+    
+    #Plot distribution by region
+    output$dist_region1 <- renderPlotly({
+        d <- plot_gtdsub()
+        plot_ly(d, x = d$region, type = "histogram")
+    })    
+    
+    #Plot distribution by region and attack type
+    output$dist_region2 <- renderPlotly({
+      d <- plot_gtdsub()
+      plot_ly(d, x = d$region, type = "histogram", color = d$attacktype)
+      #p <- ggplot(plot_gtdsub(), aes(x =.data$region, fill=.data$attacktype))+geom_histogram(stat= "count")
+    })
+    
+    #Plot distribution by country top20
+    output$dist_country <- renderPlotly({
+      d <- plot_gtdsub()
+      d <- d %>% count(d$country)
+      d <- arrange(d, desc(n))
+      d <- d[1:20,]
+      p <- ggplot(d, aes(x = reorder(.data$'d$country', .data$n), y = .data$n))+geom_bar(stat = "identity")+coord_flip()
+      ggplotly(p)
+    })
+    
+    #Plot distribution by tgroup top20
+    output$dist_tgroup <- renderPlotly({
+        d <- plot_gtdsub()
+        d <- d %>% count(d$gname) 
+        d <- arrange(d, desc(n))
+        d <- d[2:21,] #removing unknown groups
+        p <- ggplot(d, aes(x = reorder(.data$`d$gname`, d$n), y = .data$n))+geom_bar(stat = "identity")+coord_flip()
+        ggplotly(p)
+    })
+    
+    #Plot distribution by attacktype 
+    output$dist_attack <- renderPlotly({
+        d <- plot_gtdsub()
+        d <- d %>% count(d$attacktype)
+        p <- ggplot(d, aes(x = .data$`d$attacktype`, y = .data$n))+geom_bar(stat = "identity")
+        ggplotly(p)
+    })
+    
+    #Plot distribution by weaptype
+    output$dist_weap <- renderPlotly({
+        d <- plot_gtdsub()
+        d <- d %>% count(d$weaptype)
+        p <- ggplot(d, aes(x = .data$`d$weaptype`, y = .data$n))+geom_bar(stat = "identity")
+        ggplotly(p)
+    })
+    
+    output$distyear <- renderPlotly({
+      p1 <- ggplot(plot_gtdsub(), aes(x = .data$iyear))+geom_histogram(stat= "count")
+      ggplotly(p1)
+    })
+    
+    output$distyear2 <- renderPlotly({
+      p2 <- ggplot(plot_gtdsub(), aes(x= .data$iyear, colour=.data$region))+geom_freqpoly()
+      ggplotly(p2)
+    })
+    
+    output$map <- renderLeaflet({
+      #gtd_map<-gtd_uk[!is.na(gtd_uk$latitude) & !is.na(gtd_uk$longitude),]
+        gtd2 <- plot_gtdsub
+        top100 <- gtd2[c('latitude', 'longitude', 'city', 'country')]
+        dist_city <- distinct(top100, top100$city, .keep_all = TRUE)
+        by_city <- top100 %>% count(city) %>% group_by(city)
+        by_city <- by_city %>% arrange(desc(n))
+        by_city <- by_city[-grep("Unknown", by_city$city),]
+        by_city <- left_join(by_city, dist_city, by = "city")
+        by_city <- by_city[!is.na(by_city$latitude) & !is.na(by_city$longitude),]
+        by_city <- by_city %>% select(city, country, n, latitude, longitude) %>% rename(attackcount = n)
+        top100 <-  by_city[1:100,]
+      
+        gtd_map <- top100
+        
+      leaflet(data = gtd_map) %>%
+        addTiles() %>%
+        #addMarkers(lng = gtd_map$longitude,lat = gtd_map$latitude)
+        addCircleMarkers(lng = gtd_map$longitude,lat = gtd_map$latitude,  
+                         popup= paste(gtd_map$city,',',gtd_map$country,' \n Attack Counts: ',as.character(gtd_map$attackcount), sep = '\n'),
+                         radius = as.integer(gtd_map$attackcount)/150)
+    })  
+      
 })

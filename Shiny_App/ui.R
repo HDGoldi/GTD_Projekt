@@ -1,33 +1,96 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(shinydashboard)
+library(DT)
+library(plotly)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
 
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+header <- dashboardHeader(
+    title = "Global Terrorism Database"
+)
+
+sidebar <- dashboardSidebar(
+    sidebarMenu(
+        menuItem("Data Overview", tabName = "dashboard", icon = icon("dashboard")),
+        menuItem("Univariate Analysis 1", tabName = "univar1", icon = icon("chart-bar")),
+        menuItem("Univariate Analysis 2", tabName = "univar2", icon = icon("chart-bar")),
+        menuItem("Multivariate Analysis", tabName = "multivar", icon = icon("chart-bar")),
+        menuItem("Map", tabName = "map", icon = icon("map")),
+
+        sliderInput("year",
+                    "Please select the period ",
+                    min = 1970,
+                    max = 2017,
+                    value = c(1970,2017),
+                    sep = ""
         ),
+        uiOutput("regionSelection"),
+        uiOutput("countrySelection"),
+        uiOutput("attackSelection")
+    )
+)
 
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
+
+body <- dashboardBody(
+    
+    tabItems(
+        tabItem(tabName = "dashboard",
+                h2("Data Overview"),
+                DT::dataTableOutput("datatable")
+        ),
+        
+        tabItem(tabName = "univar1",
+                fluidRow(
+                    h2("Overview of Univariate Analysis"),
+                    column(width=6, 
+                           box(width = NULL, solidHeader = TRUE, plotlyOutput("distyear"))
+                    ),
+                    
+                    column(width=6, 
+                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_region1"))
+                    )
+                    
+                ),
+                fluidRow(
+                    column(width=6, 
+                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_country"))
+                    ),
+                    
+                    column(width=6, 
+                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_attack"))
+                    )
+                )
+                
+                # fluidRow(
+                #     column(width=6, 
+                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_weap"))
+                #     ),
+                #     
+                #     column(width=6, 
+                #            box(width = NULL, solidHeader = TRUE )
+                #     )
+                # )
+        ),
+        
+        tabItem(tabName = "univar2",
+                h2("Overview of Univariate Analysis 2"),
+                plotlyOutput("dist_region2"),
+                plotlyOutput("distyear2")
+        ),
+        
+        tabItem(tabName = "multivar",
+                h2("Overview of Multivariate Analysis")
+        ),
+        
+        tabItem(tabName = "map",
+                h2("Top 100 Cities by Attack Count"),
+                leafletOutput("map")
         )
     )
-))
+)
+
+dashboardPage(
+    header,
+    sidebar,
+    body
+)
