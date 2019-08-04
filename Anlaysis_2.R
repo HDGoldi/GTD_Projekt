@@ -33,7 +33,7 @@ ggbarplot(data, x = "country", y = "nkill",
 plot_str(data)
 plot_missing(data)
 plot_histogram(data)
-plot_correlation(data, type = 'continuous','iyear')
+plot_correlation(data, type = 'all','iyear')
 
 
 #correlation

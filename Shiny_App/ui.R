@@ -43,7 +43,6 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(tabItems(
     tabItem(tabName = "page1",
             h2("Overview & Table of Contents")),
-    
     tabItem(tabName = "page2",
             fluidRow(h2(
                 "Preparation of Raw Data"
