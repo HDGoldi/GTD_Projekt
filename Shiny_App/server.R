@@ -9,7 +9,6 @@ require(dplyr)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-    
     data_lite <- read.csv("../gtd_lite2.csv")
     output$data_explorer <- DT::renderDataTable({
         data_lite
@@ -24,10 +23,12 @@ shinyServer(function(input, output) {
             '../files',
             paste('raw_missing', input$n, '.png', sep =
                       '')
-         ))
+        ))
         
         # Return a list containing the filename
-        list(src = filename)
+        list(src = filename,
+             width = 500,
+             height = 500)
     }, deleteFile = FALSE)
     
     
@@ -40,26 +41,30 @@ shinyServer(function(input, output) {
         ))
         
         # Return a list containing the filename
-        list(src = filename)
+        list(src = filename,
+             width = 500,
+             height = 500)
     }, deleteFile = FALSE)
     
     output$killings1 <- renderPlot({
         data_lite %>% filter(nkill > 0) -> dfk
-        treemap(dfk, 
-                index=c("iyear"), 
-                vSize = "nkill",  
-                palette = "Reds",  
-                fontsize.title = 14 
+        treemap(
+            dfk,
+            index = c("iyear"),
+            vSize = "nkill",
+            palette = "Reds",
+            fontsize.title = 14
         )
     })
     
     output$killings2 <- renderPlot({
         data_lite %>% filter(nkill > 0) -> dfk
-        treemap(dfk, 
-                index=c("country"), 
-                vSize = "nkill",  
-                palette = "Reds",  
-                fontsize.title = 14 
+        treemap(
+            dfk,
+            index = c("country"),
+            vSize = "nkill",
+            palette = "Reds",
+            fontsize.title = 14
         )
     })
     
