@@ -3,21 +3,25 @@ library(shinydashboard)
 library(DT)
 library(shinycssloaders)
 library(markdown)
+library(plotly)
+library(leaflet)
 
 header <- dashboardHeader(title = "Global Terrorism Database",
                           titleWidth = 300)
+
 
 sidebar <- dashboardSidebar(
     width = 300,
     sidebarMenu(
         menuItem(
             "Overview/Contents",
-            icon = icon("list-ul"),
+            icon = icon("dashboard"),
             tabName = "page1"
         ),
         menuItem(
             "Data Preparation",
             icon = icon("database"),
+            
             tabName = "page2"
         ),
         menuItem("Data Explorer", icon = icon("table"), tabName = "page3"),
@@ -28,14 +32,19 @@ sidebar <- dashboardSidebar(
         ),
         menuItem(
             "Multivariate Analysis",
-            icon = icon("columns"),
+            icon = icon("chart-bar"),
             tabName = "page5"
         ),
         menuItem(
             "Geospatial Analysis",
             icon = icon("map"),
             tabName = "page6"
-        )
+        ),
+        
+        withSpinner(uiOutput("yearSelection")),
+        uiOutput("regionSelection"),
+        uiOutput("countrySelection"),
+        uiOutput("attackSelection")
     )
 )
 
@@ -44,9 +53,7 @@ body <- dashboardBody(tabItems(
     tabItem(tabName = "page1",
             h2("Overview & Table of Contents")),
     tabItem(tabName = "page2",
-            fluidRow(h2(
-                "Preparation of Raw Data"
-            )),
+            h2("Preparation of Raw Data"),
             fluidRow(
                 tabBox(
                     title = "Missing Values",
@@ -76,10 +83,45 @@ body <- dashboardBody(tabItems(
             valueBoxOutput("total_killed")
             
         ),
-        DT::dataTableOutput("data_explorer")
+        withSpinner(DT::dataTableOutput("datatable")),
     ),
-    tabItem(tabName = "page4",
-            h2("Univariate Insights into Global Terror")),
+    tabItem(
+        tabName = "page4",
+        h2("Univariate Insights into Global Terror"),
+        fluidRow(
+            h2("Univariate Analysis"),
+            valueBoxOutput("attack_year"),
+            valueBoxOutput("casual_att")
+        ),
+        fluidRow(
+            tabBox(
+                title = "Attack Count Distributions",
+                width = "8",
+                tabPanel("By Year",
+                         h3(""),
+                         withSpinner(plotlyOutput("distyear"))),
+                tabPanel("By Region",
+                         h3(""),
+                         withSpinner(plotlyOutput("dist_region1"))),
+                tabPanel("By Attack Type",
+                         h3(""),
+                         withSpinner(plotlyOutput("dist_attack"))),
+                tabPanel("By Weapon Type",
+                         h3(""),
+                         withSpinner(plotlyOutput("dist_weap")))
+            )
+        ),
+        fluidRow(tabBox(
+            title = "Other Title",
+            width = "8",
+            tabPanel("By Year",
+                     h3(""),
+                     withSpinner(plotlyOutput("dist_region2"))),
+            tabPanel("By Region",
+                     h3(""),
+                     withSpinner(plotlyOutput("distyear2")))
+        )),
+    ),
     tabItem(
         tabName = "page5",
         h2("Multivariate Insights into Global Terror"),
@@ -90,7 +132,6 @@ body <- dashboardBody(tabItems(
                 h3("Overall killings per Year"),
                 withSpinner(plotOutput('killings1')),
                 includeMarkdown("killings1.md")
-                
             ),
             tabPanel(
                 "Country",
@@ -113,7 +154,6 @@ body <- dashboardBody(tabItems(
                 "Wordcloud for Summary Text",
                 h3("Overall killings per Year"),
                 withSpinner(plotOutput('word_cloud1'))
-                
             ),
             tabPanel(
                 "Denogram for Summary Text",
@@ -123,7 +163,11 @@ body <- dashboardBody(tabItems(
         ))
     ),
     tabItem(tabName = "page6",
-            h2("Geospatial Insights into Global Terror"))
+            h2("Top 1000 Cities by Attack Count"),
+            fluidRow(box(
+                width = "8",
+                leafletOutput("map")
+            )))
 ))
 
 dashboardPage(skin = "black",
