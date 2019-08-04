@@ -4,6 +4,7 @@ library(DT)
 library(plotly)
 library(shinycssloaders)
 library(leaflet)
+library(shinyGlobe)
 
 
 
@@ -18,6 +19,7 @@ sidebar <- dashboardSidebar(
         menuItem("Univariate Analysis", tabName = "univar", icon = icon("chart-bar")),
         menuItem("Multivariate Analysis", tabName = "multivar", icon = icon("chart-bar")),
         menuItem("Map", tabName = "map", icon = icon("map")),
+        menuItem("Globe View", tabName = "globe", icon = icon("globe")),
 
         withSpinner(uiOutput("yearSelection")),
         uiOutput("regionSelection"),
@@ -28,7 +30,7 @@ sidebar <- dashboardSidebar(
 
 
 body <- dashboardBody(
-    
+
     tabItems(
         tabItem(tabName = "dashboard",
                 h2("Data Overview"),
@@ -126,12 +128,26 @@ body <- dashboardBody(
         ),
         
         tabItem(tabName = "map",
-                h2("Top 1000 Cities by Attack Count"),
+                
                 fluidRow(box(
-                width = "8",
-                leafletOutput("map")
-                )
-            ))
+                    width = "10",
+                    
+                    h2("Top 1000 Cities by Attack Count"),
+                    withSpinner(leafletOutput("map"))
+                ))
+            ),
+        
+        tabItem(tabName = "globe",
+                fluidRow(box(
+                    width = "12",
+                    height = 1000,
+                    title = "Globe View",
+                    textOutput("globeText"),
+
+                    withSpinner(globeOutput("globe"))
+                ))
+   
+        )
     )
 )
 
