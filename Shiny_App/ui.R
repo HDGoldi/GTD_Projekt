@@ -107,6 +107,20 @@ body <- dashboardBody(tabItems(
                 withSpinner(plotOutput('killings3')),
                 includeMarkdown("killings3.md")
             )
+        )),
+        fluidRow(tabBox(
+            title = "Summary",
+            tabPanel(
+                "Wordcloud for Summary Text",
+                h3("Overall killings per Year"),
+                withSpinner(plotOutput('word_cloud1'))
+                
+            ),
+            tabPanel(
+                "Denogram for Summary Text",
+                h3("Overall killings per Country"),
+                withSpinner(plotOutput('dendogram1'))
+            )
         ))
     ),
     tabItem(tabName = "page6",

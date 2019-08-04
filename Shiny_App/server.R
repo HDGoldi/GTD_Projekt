@@ -5,6 +5,8 @@ library(png)
 library(DataExplorer)
 library(treemap)
 require(dplyr)
+library(tm)
+library(wordcloud)
 
 
 # Define server logic required to draw a histogram
@@ -142,6 +144,42 @@ shinyServer(function(input, output) {
             icon = icon("stream"),
             color = "orange"
         )
+    })
+    
+    output$word_cloud1 <- renderPlot({
+        df %>% filter(!is.na(summary)) -> dfn0
+        dfn0 %>% filter(summary != "") -> dfn
+        text <- sample(dfn$summary, nrow(dfn)/100)
+        myCorpus <- Corpus(VectorSource(text))
+        #myCorpus = tm_map(myCorpus, content_transformer(tolower))
+        # remove punctuation
+        myCorpus = tm_map(myCorpus, removePunctuation)
+        myCorpus = tm_map(myCorpus, removeNumbers)
+        # remove stopwords for English
+        myCorpus = tm_map(myCorpus, removeWords,c(stopwords("english"), stopwords("SMART"), "the"))
+        #create DTM
+        myDtm = TermDocumentMatrix(myCorpus,
+                                   control = list(minWordLength = 3))
+        #Frequent Terms and Associations
+        freqTerms <- findFreqTerms(myDtm, lowfreq=1)
+        m <- as.matrix(myDtm)
+        # calculate the frequency of words
+        v <- sort(rowSums(m), decreasing=TRUE)
+        myNames <- names(v)
+        d <- data.frame(word=myNames, freq=v)
+        wctop <-wordcloud(d$word, d$freq, min.freq=50, colors=brewer.pal(9,"Set1"))
+    })
+    
+    output$dendogram1 <- renderPlot({
+        mydata.df <- as.data.frame(inspect(removeSparseTerms(myDtm, sparse=0.99)))
+        mydata.df.scale <- scale(mydata.df)
+        d <- dist(mydata.df.scale, method = "euclidean") # distance matrix
+        fit <- hclust(d, method="ward.D")
+        plot(fit, xaxt = 'n', yaxt='n', xlab = "Word clustering using ward.D method", ylab = "",
+             main="Cluster Dendogram for words used in summary description") # display dendogram?
+        groups <- cutree(fit, k=5) # cut tree into 5 clusters
+        # draw dendogram with blue borders around the 5 clusters
+        rect.hclust(fit, k=5, border="blue")
     })
     
 })
