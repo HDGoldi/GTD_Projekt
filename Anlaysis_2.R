@@ -125,3 +125,5 @@ treemap(dfk,
         title="Killings in Global Terrorism", 
         fontsize.title = 14 
 )
+
+data_lite$nkill

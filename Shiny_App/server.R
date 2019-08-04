@@ -78,4 +78,65 @@ shinyServer(function(input, output) {
         )
     })
     
+    selectedData <- reactive({
+        data_lite[, c(input$xcol, input$ycol)]
+    })
+    
+    output$total_values <- renderValueBox({
+        valueBox(
+            subtitle = "Total Rows",
+            value = nrow(data_lite),
+            icon = icon("stream")
+        )
+    })
+    
+    output$total_years <- renderValueBox({
+        df_uniq <- unique(data_lite$iyear)
+        valueBox(
+            subtitle = "Total Years",
+            value = length(df_uniq),
+            icon = icon("stream"),
+            color = "light-blue",
+        )
+    })
+    
+    output$total_countries <- renderValueBox({
+        df_uniq <- unique(data_lite$country)
+        valueBox(
+            subtitle = "Total Countries",
+            value = length(df_uniq),
+            icon = icon("stream"),
+            color = "light-blue"
+        )
+    })
+    output$total_cities <- renderValueBox({
+        df_uniq <- unique(data_lite$city)
+        valueBox(
+            subtitle = "Total Cities",
+            value = length(df_uniq),
+            icon = icon("stream"),
+            color = "light-blue"
+        )
+    })
+    
+    output$total_killed <- renderValueBox({
+        dfk %>% summarise(nkills = sum(nkill)) -> dfyr
+        valueBox(
+            subtitle = "Total Killed",
+            value = dfyr,
+            icon = icon("stream"),
+            color = "red"
+        )
+    })
+    
+    output$total_wounded <- renderValueBox({
+        dfk %>% filter(nwound > 0) %>% summarise(nkills = sum(nwound)) -> dfyr
+        valueBox(
+            subtitle = "Total Wounded",
+            value = dfyr,
+            icon = icon("stream"),
+            color = "orange"
+        )
+    })
+    
 })
