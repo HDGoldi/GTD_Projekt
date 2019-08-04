@@ -1,0 +1,1 @@
+### If looking to the country split, we see that there are few countries where the number of killed people in terrorist attacks is huge. Some of them have experienced recent massive increase, like Iraq and Syria and Afganistan while others have a long history, like Peru, Colombia, India, Pakistan.
