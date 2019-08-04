@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(DT)
 library(plotly)
+library(shinycssloaders)
 
 
 
@@ -11,19 +12,13 @@ header <- dashboardHeader(
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
+        id="tabitems",
         menuItem("Data Overview", tabName = "dashboard", icon = icon("dashboard")),
-        menuItem("Univariate Analysis 1", tabName = "univar1", icon = icon("chart-bar")),
-        menuItem("Univariate Analysis 2", tabName = "univar2", icon = icon("chart-bar")),
+        menuItem("Univariate Analysis", tabName = "univar", icon = icon("chart-bar")),
         menuItem("Multivariate Analysis", tabName = "multivar", icon = icon("chart-bar")),
         menuItem("Map", tabName = "map", icon = icon("map")),
 
-        sliderInput("year",
-                    "Please select the period ",
-                    min = 1970,
-                    max = 2017,
-                    value = c(1970,2017),
-                    sep = ""
-        ),
+        withSpinner(uiOutput("yearSelection")),
         uiOutput("regionSelection"),
         uiOutput("countrySelection"),
         uiOutput("attackSelection")
@@ -36,47 +31,80 @@ body <- dashboardBody(
     tabItems(
         tabItem(tabName = "dashboard",
                 h2("Data Overview"),
-                DT::dataTableOutput("datatable")
+                withSpinner(DT::dataTableOutput("datatable"))
         ),
         
-        tabItem(tabName = "univar1",
+        tabItem(tabName = "univar",
+                
                 fluidRow(
-                    h2("Overview of Univariate Analysis"),
-                    column(width=6, 
-                           box(width = NULL, solidHeader = TRUE, plotlyOutput("distyear"))
-                    ),
+                    h2("Univariate Analysis"),
                     
-                    column(width=6, 
-                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_region1"))
-                    )
-                    
+                    valueBoxOutput("attack_year"),
+                    valueBoxOutput("casual_att")
                 ),
-                fluidRow(
-                    column(width=6, 
-                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_country"))
+                
+                fluidRow(tabBox(
+                    
+                    title = "Attack Count Distributions",
+                    
+                    tabPanel(
+                        "By Year",
+                        h3(""),
+                        withSpinner(plotlyOutput("distyear"))
+                        #includeMarkdown("killings1.md")
                     ),
                     
-                    column(width=6, 
-                           box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_attack"))
+                    tabPanel(
+                        "By Region",
+                        h3(""),
+                        withSpinner(plotlyOutput("dist_region1"))
+                        #includeMarkdown("killings2.md")
+                        
+                    ),
+                    
+                    tabPanel(
+                        "By Attack Type",
+                        h3(""),
+                        withSpinner(plotlyOutput("dist_attack"))
+                        #includeMarkdown("killings3.md")
+                    ),
+                    
+                    tabPanel(
+                        "By Weapon Type",
+                        h3(""),
+                        withSpinner(plotlyOutput("dist_weap"))
+                        #includeMarkdown("killings3.md")
                     )
-                )
+                ))
                 
                 # fluidRow(
+                #     h2("Overview of Univariate Analysis"),
                 #     column(width=6, 
-                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_weap"))
+                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("distyear"))
                 #     ),
                 #     
                 #     column(width=6, 
-                #            box(width = NULL, solidHeader = TRUE )
+                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_region1"))
+                #     )
+                #     
+                # ),
+                # fluidRow(
+                #     column(width=6, 
+                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_country"))
+                #     ),
+                #     
+                #     column(width=6, 
+                #            box(width = NULL, solidHeader = TRUE, plotlyOutput("dist_attack"))
                 #     )
                 # )
+                
         ),
         
-        tabItem(tabName = "univar2",
-                h2("Overview of Univariate Analysis 2"),
-                plotlyOutput("dist_region2"),
-                plotlyOutput("distyear2")
-        ),
+        # tabItem(tabName = "univar2",
+        #         h2("Overview of Univariate Analysis 2"),
+        #         plotlyOutput("dist_region2"),
+        #         plotlyOutput("distyear2")
+        # ),
         
         tabItem(tabName = "multivar",
                 h2("Overview of Multivariate Analysis")

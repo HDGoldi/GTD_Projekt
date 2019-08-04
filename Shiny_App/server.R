@@ -19,6 +19,15 @@ shinyServer(function(input, output, session) {
     
     
     #data explorer UI
+    output$yearSelection <- renderUI({
+        sliderInput("year", label = "Please select the period ",
+                    min =  min(gtd$iyear, na.rm=T),
+                    max = max(gtd$iyear, na.rm=T),
+                    value = c(min(gtd$iyear, na.rm=T), max(gtd$iyear, na.rm=T)),
+                    sep = ""
+        )
+    })
+    
     output$regionSelection <- renderUI({
         pickerInput('region', label = 'Region', choices = unique(as.character(gtd$region)), options = list(`actions-box` = TRUE), multiple = TRUE, selected = unique(gtd$region))
     })
@@ -30,6 +39,7 @@ shinyServer(function(input, output, session) {
     output$attackSelection <- renderUI({
         pickerInput('attack', label = 'Attack Type', choices = unique(as.character(gtd$attacktype)), options = list(`actions-box` = TRUE), multiple = TRUE, selected = unique(gtd$attacktype))
     })
+    
     
       
     plot_gtdsub <- reactive({
@@ -57,6 +67,16 @@ shinyServer(function(input, output, session) {
         updateSelectInput(session = session, inputId = "country", choices = sel, selected = sel)
     })
 
+    observe({
+        input$tabitems
+        print("Tab Event")
+        
+        updateSliderInput(session = session, inputId = "year", value = c(min(gtd$iyear, na.rm=T), max(gtd$iyear, na.rm=T)))
+        updateSelectInput(session = session, inputId = "region", choices = unique(as.character(gtd$region)), selected = unique(gtd$region))
+        updateSelectInput(session = session, inputId = "country", choices = unique(as.character(gtd$country)), selected = unique(gtd$country))
+        updateSelectInput(session = session, inputId = "attack", choices = unique(as.character(gtd$attacktype)), selected = unique(gtd$attacktype))
+    })
+    
     output$datatable <- DT::renderDataTable({
       plot_gtdsub()
     }) 
@@ -99,6 +119,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$attacktype)
         p <- ggplot(d, aes(x = .data$`d$attacktype`, y = .data$n))+geom_bar(stat = "identity")
+        p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
     })
     
@@ -107,6 +128,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$weaptype)
         p <- ggplot(d, aes(x = .data$`d$weaptype`, y = .data$n))+geom_bar(stat = "identity")
+        p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
     })
     
@@ -118,6 +140,34 @@ shinyServer(function(input, output, session) {
     output$distyear2 <- renderPlotly({
       p2 <- ggplot(plot_gtdsub(), aes(x= .data$iyear, colour=.data$region))+geom_freqpoly()
       ggplotly(p2)
+    })
+    
+    
+    output$attack_year <- renderValueBox({
+        d <- plot_gtdsub()
+        d <- d %>% count(d$iyear)
+        
+        sd <- round(sd(d$n),1)
+        
+        valueBox(
+            subtitle = paste("Mean Attacks per Year"," (SD: ",as.character(sd),")"),
+            value = round(mean(d$n),1),
+            icon = icon("stream")
+        )
+    })
+    
+    output$casual_att <- renderValueBox({
+        d <- plot_gtdsub()
+        d <- d %>% mutate(casualties = .data$nkill + .data$nwound)
+        d <- d[!is.na(d$casualties),]
+        
+        sd <- round(sd(d$casualties),1)
+        
+        valueBox(
+            subtitle = paste("Mean Casualties per Attack"," (SD: ",as.character(sd),")"),
+            value = round(mean(d$casualties),1) ,
+            icon = icon("stream")
+        )
     })
     
     output$map <- renderLeaflet({
