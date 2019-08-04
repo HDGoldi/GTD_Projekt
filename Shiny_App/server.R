@@ -8,23 +8,20 @@ library(shinyWidgets)
 library(ggplot2)
 library(leaflet)
 library(plotly)
-library(htmltools)
+library(dplyr)
 
 shinyServer(function(input, output, session) {
     
     gtd <- read.csv("./Data/gtd_lite2.csv")
-    data_loaded <- FALSE
-    #gtd_uk <- gtd[gtd$country == "United Kingdom",]
-    #gtd_eu <- gtd[gtd$region == "Western Europe",]
-    
-    
+
     #data explorer UI
     output$yearSelection <- renderUI({
         sliderInput("year", label = "Please select the period ",
                     min =  min(gtd$iyear, na.rm=T),
                     max = max(gtd$iyear, na.rm=T),
                     value = c(min(gtd$iyear, na.rm=T), max(gtd$iyear, na.rm=T)),
-                    sep = ""
+                    sep = "",
+                    step = 1
         )
     })
     
@@ -171,26 +168,29 @@ shinyServer(function(input, output, session) {
     })
     
     output$map <- renderLeaflet({
-      #gtd_map<-gtd_uk[!is.na(gtd_uk$latitude) & !is.na(gtd_uk$longitude),]
-        gtd2 <- plot_gtdsub
-        top100 <- gtd2[c('latitude', 'longitude', 'city', 'country')]
-        dist_city <- distinct(top100, top100$city, .keep_all = TRUE)
-        by_city <- top100 %>% count(city) %>% group_by(city)
-        by_city <- by_city %>% arrange(desc(n))
-        by_city <- by_city[-grep("Unknown", by_city$city),]
-        by_city <- left_join(by_city, dist_city, by = "city")
-        by_city <- by_city[!is.na(by_city$latitude) & !is.na(by_city$longitude),]
-        by_city <- by_city %>% select(city, country, n, latitude, longitude) %>% rename(attackcount = n)
-        top100 <-  by_city[1:100,]
+
+        d <- plot_gtdsub()
+        d <- d %>% mutate(casualties = .data$nkill + .data$nwound)
+        d <- d[c('latitude', 'longitude', 'city', 'country', 'casualties')]
+        dist_city <- distinct(d, d$city, .keep_all = TRUE)
+        d2 <- d %>% count(city) %>% group_by(city)
+        d2 <- d2 %>% arrange(desc(n))
+        d2 <- d2[-grep("Unknown", d2$city),]
+        d2 <- left_join(d2, dist_city, by = "city")
+        d2 <- d2[!is.na(d2$latitude) & !is.na(d2$longitude),]
+        d2 <- d2 %>% select(city, country, n, latitude, longitude) %>% rename(attackcount = n)
+        d <-  d2[1:1000,]
       
-        gtd_map <- top100
+        gtd_map <- d
         
       leaflet(data = gtd_map) %>%
         addTiles() %>%
         #addMarkers(lng = gtd_map$longitude,lat = gtd_map$latitude)
         addCircleMarkers(lng = gtd_map$longitude,lat = gtd_map$latitude,  
-                         popup= paste(gtd_map$city,',',gtd_map$country,' \n Attack Counts: ',as.character(gtd_map$attackcount), sep = '\n'),
-                         radius = as.integer(gtd_map$attackcount)/150)
+                         popup= paste(sep = "</br>", 
+                                      paste(gtd_map$city,",",gtd_map$country),
+                                      paste("Attacks:",gtd_map$attackcount)),
+                         radius = sqrt(gtd_map$attackcount*0.5))
     })  
       
 })

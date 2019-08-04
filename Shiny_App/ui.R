@@ -3,6 +3,7 @@ library(shinydashboard)
 library(DT)
 library(plotly)
 library(shinycssloaders)
+library(leaflet)
 
 
 
@@ -46,6 +47,7 @@ body <- dashboardBody(
                 fluidRow(tabBox(
                     
                     title = "Attack Count Distributions",
+                    width = "8",
                     
                     tabPanel(
                         "By Year",
@@ -75,6 +77,25 @@ body <- dashboardBody(
                         withSpinner(plotlyOutput("dist_weap"))
                         #includeMarkdown("killings3.md")
                     )
+                )),
+                
+                fluidRow(tabBox(
+                    
+                    title = "Other Title",
+                    width = "8",
+                    
+                    tabPanel(
+                        "By Year",
+                        h3(""),
+                        withSpinner(plotlyOutput("dist_region2"))
+                    ),
+                    
+                    tabPanel(
+                        "By Region",
+                        h3(""),
+                        withSpinner(plotlyOutput("distyear2"))
+                        
+                    )
                 ))
                 
                 # fluidRow(
@@ -100,20 +121,17 @@ body <- dashboardBody(
                 
         ),
         
-        # tabItem(tabName = "univar2",
-        #         h2("Overview of Univariate Analysis 2"),
-        #         plotlyOutput("dist_region2"),
-        #         plotlyOutput("distyear2")
-        # ),
-        
         tabItem(tabName = "multivar",
                 h2("Overview of Multivariate Analysis")
         ),
         
         tabItem(tabName = "map",
-                h2("Top 100 Cities by Attack Count"),
+                h2("Top 1000 Cities by Attack Count"),
+                fluidRow(box(
+                width = "8",
                 leafletOutput("map")
-        )
+                )
+            ))
     )
 )
 
