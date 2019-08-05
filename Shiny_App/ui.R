@@ -51,117 +51,109 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(tabItems(
     tabItem(tabName = "page1",
-            h2("Overview & Table of Contents")),
+            h2("Overview & Table of Contents"),
+            fluidRow(
+                box(
+                    h2("Global-Terrorism Database"),
+                    background = "light-blue",
+                    solidHeader = TRUE,
+                    p(
+                        "The Global Terrorism Database (GTD) is an open-source database including information on
+                                         terrorist attacks around the world from 1970 through 2015 (with annual updates planned for
+                                         the future). The GTD includes systematic data on domestic as well as international terrorist
+                                         incidents that have occurred during this time period, with more than 150,000
+                                         cases. The database is maintained by researchers at the National Consortium for the Study
+                                         of Terrorism and Responses to Terrorism (START), headquartered at the University of
+                                         Maryland."
+                    ),
+                    tags$ul(
+                        tags$li("Time period: 1970-2017, except 1993"),
+                        tags$li("Unit of analysis: Attack"),
+                        tags$li("Variables: >100 variables on location, tactics, perpetrators, targets, and outcomes"),
+                        tags$li("Sources: Unclassified media articles.")
+                    )
+                    
+                ),
+                box(
+                    h2("Data Source"),
+                    style = "font-size: 120%; background-color : #e77e7e;",
+                    solidHeader = TRUE,
+                    p(
+                        "GTD can be obtained from",
+                        a(
+                            strong("Kaggle"),
+                            href = "https://www.kaggle.com/START-UMD/gtd",
+                            target = "_blank",
+                            style = "color :white; font-weight : bold;"
+                        ),
+                        "The clean data set used in this application is also available to download."
+                    ),
+                    downloadButton('downloadData', 'Download Clean Data')
+                )
+            )),
     tabItem(tabName = "page2",
             h2("Preparation of Raw Data"),
             fluidRow(
                 tabBox(
                     title = "Missing Values",
-                    tabPanel(
-                        "Original Dataset",
-                        h3("Total of 135 variables with a lot of missing values"),
-                        plotOutput("raw_missing")
-                    ),
-                    tabPanel(
-                        "Cleand Dataset",
-                        h3(
-                            "Total of 33 variables with cleaned data and just a few missing values"
-                        ),
-                        plotOutput("lite_missing")
-                    )
+                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), plotOutput("raw_missing")),
+                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), plotOutput("lite_missing"))
                 )
             )),
-    tabItem(
-        tabName = "page3",
-        fluidRow(
+    tabItem(tabName = "page3",
             h2("Exploring the Dataset"),
-            valueBoxOutput("total_values"),
-            valueBoxOutput("total_years"),
-            valueBoxOutput("total_countries"),
-            valueBoxOutput("total_cities"),
-            valueBoxOutput("total_wounded"),
-            valueBoxOutput("total_killed")
-            
-        ),
-        withSpinner(DT::dataTableOutput("datatable")),
-    ),
-    tabItem(
-        tabName = "page4",
-        h2("Univariate Insights into Global Terror"),
-        fluidRow(
-            h2("Univariate Analysis"),
-            valueBoxOutput("attack_year"),
-            valueBoxOutput("casual_att")
-        ),
-        fluidRow(
-            tabBox(
-                title = "Attack Count Distributions",
-                width = "8",
-                tabPanel("By Year",
-                         h3(""),
-                         withSpinner(plotlyOutput("distyear"))),
-                tabPanel("By Region",
-                         h3(""),
-                         withSpinner(plotlyOutput("dist_region1"))),
-                tabPanel("By Attack Type",
-                         h3(""),
-                         withSpinner(plotlyOutput("dist_attack"))),
-                tabPanel("By Weapon Type",
-                         h3(""),
-                         withSpinner(plotlyOutput("dist_weap")))
-            )
-        ),
-        fluidRow(tabBox(
-            title = "Other Title",
-            width = "8",
-            tabPanel("By Year",
-                     h3(""),
-                     withSpinner(plotlyOutput("dist_region2"))),
-            tabPanel("By Region",
-                     h3(""),
-                     withSpinner(plotlyOutput("distyear2")))
-        )),
-    ),
-    tabItem(
-        tabName = "page5",
-        h2("Multivariate Insights into Global Terror"),
-        fluidRow(tabBox(
-            title = "Killings",
-            tabPanel(
-                "Year",
-                h3("Overall killings per Year"),
-                withSpinner(plotOutput('killings1')),
-                includeMarkdown("killings1.md")
+            fluidRow(
+                valueBoxOutput("total_values"),
+                valueBoxOutput("total_years"),
+                valueBoxOutput("total_countries"),
+                valueBoxOutput("total_cities"),
+                valueBoxOutput("total_wounded"),
+                valueBoxOutput("total_killed")
             ),
-            tabPanel(
-                "Country",
-                h3("Overall killings per Country"),
-                withSpinner(plotOutput('killings2')),
-                includeMarkdown("killings2.md")
+            withSpinner(DT::dataTableOutput("datatable"))),
+    tabItem(tabName = "page4",
+            h2("Univariate Insights into Global Terror"),
+            fluidRow(valueBoxOutput("attack_year"),
+                     valueBoxOutput("casual_att")
+                
             ),
-            tabPanel(
-                "Countries and Years",
-                h3(
-                    "Killings per Countries and Years - size is proportional with the number of killings"
-                ),
-                withSpinner(plotOutput('killings3')),
-                includeMarkdown("killings3.md")
-            )
-        )),
-        fluidRow(tabBox(
-            title = "Summary",
-            tabPanel(
-                "Wordcloud for Summary Text",
-                h3("Overall killings per Year"),
-                withSpinner(plotOutput('word_cloud1'))
+            fluidRow(
+                tabBox(
+                    title = "Attack Count Distributions",
+                    width = "8",
+                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("distyear"))),
+                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("dist_region1"))),
+                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("dist_attack"))),
+                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("dist_weap")))
+                )
+                
             ),
-            tabPanel(
-                "Denogram for Summary Text",
-                h3("Overall killings per Country"),
-                withSpinner(plotOutput('dendogram1'))
-            )
-        ))
-    ),
+            fluidRow(
+                tabBox(
+                    title = "Enhanced attack Count Distributions",
+                    width = "8",
+                    tabPanel("By Year", h3(""), withSpinner(plotlyOutput("dist_region2"))),
+                    tabPanel("By Region", h3(""), withSpinner(plotlyOutput("distyear2")))
+                )
+                
+            )),
+    tabItem(tabName = "page5",
+            h2("Multivariate Insights into Global Terror"),
+            fluidRow(
+                tabBox(
+                    title = "Killings",
+                    tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), includeMarkdown("killings1.md")),
+                    tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), includeMarkdown("killings2.md")),
+                    tabPanel("Countries & Years",h3("Killings per Countries and Years - size is proportional with the number of killings"), withSpinner(plotOutput('killings3')), includeMarkdown("killings3.md"))
+                )
+            ),
+            fluidRow(
+                tabBox(
+                    title = "Summary - Text Insights",
+                    tabPanel("Wordcloud for Summary Text", withSpinner(plotOutput('word_cloud1'))),
+                    tabPanel("Denogram for Summary Text", withSpinner(plotOutput('dendogram1')))
+                )
+            )),
     tabItem(tabName = "page6",
             h2("Top 1000 Cities by Attack Count"),
             fluidRow(box(
