@@ -162,3 +162,10 @@ plot(fit, xaxt = 'n', yaxt='n', xlab = "Word clustering using ward.D method", yl
 groups <- cutree(fit, k=5) # cut tree into 5 clusters
 # draw dendogram with blue borders around the 5 clusters
 rect.hclust(fit, k=5, border="blue")
+
+library(utils)
+myfile <- read.csv("../globalterrorismdb_0718dist.csv")
+
+library(readr)
+test = read_csv("gtd.csv.zip")
+

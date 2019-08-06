@@ -16,6 +16,7 @@ library(DataExplorer)
 
 shinyServer(function(input, output, session) {
     data_lite <- read.csv("../gtd_lite2.csv")
+    data <- read.csv("../globalterrorismdb_0718dist.csv")
     
     output$data_explorer <- DT::renderDataTable({
         data_lite
@@ -28,8 +29,11 @@ shinyServer(function(input, output, session) {
             label = "Please select the period ",
             min =  min(data_lite$iyear, na.rm = T),
             max = max(data_lite$iyear, na.rm = T),
-            value = c(min(data_lite$iyear, na.rm = T), max(data_lite$iyear, na.rm =
-                                                         T)),
+            value = c(
+                min(data_lite$iyear, na.rm = T),
+                max(data_lite$iyear, na.rm =
+                        T)
+            ),
             sep = "",
             step = 1
         )
@@ -89,10 +93,10 @@ shinyServer(function(input, output, session) {
         #removeModal()
     })
     
-    
     observe({
         input$region
-        sel <- unique(data_lite[data_lite$region == input$region, "country"])
+        sel <-
+            unique(data_lite[data_lite$region == input$region, "country"])
         updateSelectInput(
             session = session,
             inputId = "country",
@@ -108,7 +112,10 @@ shinyServer(function(input, output, session) {
         updateSliderInput(
             session = session,
             inputId = "year",
-            value = c(min(data_lite$iyear, na.rm = T), max(data_lite$iyear, na.rm = T))
+            value = c(
+                min(data_lite$iyear, na.rm = T),
+                max(data_lite$iyear, na.rm = T)
+            )
         )
         updateSelectInput(
             session = session,
@@ -172,7 +179,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$gname)
         d <- arrange(d, desc(n))
-        d <- d[2:21,] #removing unknown groups
+        d <- d[2:21, ] #removing unknown groups
         p <-
             ggplot(d, aes(x = reorder(.data$`d$gname`, d$n), y = .data$n)) + geom_bar(stat = "identity") +
             coord_flip()
@@ -284,14 +291,11 @@ shinyServer(function(input, output, session) {
     })
     
     output$raw_missing <- renderImage({
-        # When input$n is 1, filename is ./images/image1.jpeg
         filename <- normalizePath(file.path(
             '../files',
             paste('raw_missing', input$n, '.png', sep =
                       '')
         ))
-        
-        # Return a list containing the filename
         list(src = filename,
              width = 500,
              height = 500)
@@ -299,36 +303,32 @@ shinyServer(function(input, output, session) {
     
     
     output$lite_missing <- renderImage({
-        # When input$n is 1, filename is ./images/image1.jpeg
         filename <- normalizePath(file.path(
             '../files',
             paste('missing_lite', input$n, '.png', sep =
                       '')
         ))
-        
-        # Return a list containing the filename
         list(src = filename,
              width = 500,
              height = 500)
     }, deleteFile = FALSE)
     
-    output$missingdata_lite <- renderPlot(
-        height = 700,
-        width = "auto",
-        {
-        plot_missing(data_lite)
-    })
+    output$missingdata_lite <- renderPlot(height = 700,
+                                          width = "auto",
+                                          {
+                                              plot_missing(data_lite)
+                                          })
     
-    output$missingdata <- renderPlot(
-        height = 700,
-        width = "auto",
-        {
-        plot_missing(data)
-        })
+    output$missingdata <- renderPlot(height = 700,
+                                     width = "auto",
+                                     {
+                                         plot_missing(data)
+                                     })
     
     
     output$killings1 <- renderPlot({
-        data_lite %>% filter(nkill > 0) -> dfk
+        d <- plot_gtdsub()
+        d %>% filter(nkill > 0) -> dfk
         treemap(
             dfk,
             index = c("iyear"),
@@ -339,7 +339,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$killings2 <- renderPlot({
-        data_lite %>% filter(nkill > 0) -> dfk
+        d <- plot_gtdsub()
+        d %>% filter(nkill > 0) -> dfk
         treemap(
             dfk,
             index = c("country"),
@@ -350,7 +351,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$killings3 <- renderPlot({
-        data_lite %>% filter(nkill > 0) -> dfk
+        d <- plot_gtdsub()
+        d %>% filter(nkill > 0) -> dfk
         treemap(
             dfk,
             #Your data frame object
@@ -369,15 +371,17 @@ shinyServer(function(input, output, session) {
     })
     
     output$total_values <- renderValueBox({
+        d <- plot_gtdsub()
         valueBox(
             subtitle = "Total Rows",
-            value = nrow(data_lite),
+            value = nrow(d),
             icon = icon("stream")
         )
     })
     
     output$total_years <- renderValueBox({
-        df_uniq <- unique(data_lite$iyear)
+        d <- plot_gtdsub()
+        df_uniq <- unique(d$iyear)
         valueBox(
             subtitle = "Total Years",
             value = length(df_uniq),
@@ -387,7 +391,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$total_countries <- renderValueBox({
-        df_uniq <- unique(data_lite$country)
+        d <- plot_gtdsub()
+        df_uniq <- unique(d$country)
         valueBox(
             subtitle = "Total Countries",
             value = length(df_uniq),
@@ -396,7 +401,8 @@ shinyServer(function(input, output, session) {
         )
     })
     output$total_cities <- renderValueBox({
-        df_uniq <- unique(data_lite$city)
+        d <- plot_gtdsub()
+        df_uniq <- unique(d$city)
         valueBox(
             subtitle = "Total Cities",
             value = length(df_uniq),
@@ -406,6 +412,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$total_killed <- renderValueBox({
+        d <- plot_gtdsub()
+        d %>% filter(nkill > 0) -> dfk
         dfk %>% summarise(nkills = sum(nkill)) -> dfyr
         valueBox(
             subtitle = "Total Killed",
@@ -416,7 +424,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$total_wounded <- renderValueBox({
-        dfk %>% filter(nwound > 0) %>% summarise(nkills = sum(nwound)) -> dfyr
+        d <- plot_gtdsub()
+        d %>% filter(nwound > 0) %>% summarise(nkills = sum(nwound)) -> dfyr
         valueBox(
             subtitle = "Total Wounded",
             value = dfyr,
@@ -425,55 +434,84 @@ shinyServer(function(input, output, session) {
         )
     })
     
-    output$word_cloud1 <- renderPlot({
-        df %>% filter(!is.na(summary)) -> dfn0
-        dfn0 %>% filter(summary != "") -> dfn
-        text <- sample(dfn$summary, nrow(dfn) / 100)
-        myCorpus <- Corpus(VectorSource(text))
-        #myCorpus = tm_map(myCorpus, content_transformer(tolower))
-        # remove punctuation
-        myCorpus = tm_map(myCorpus, removePunctuation)
-        myCorpus = tm_map(myCorpus, removeNumbers)
-        # remove stopwords for English
-        myCorpus = tm_map(myCorpus,
-                          removeWords,
-                          c(stopwords("english"), stopwords("SMART"), "the"))
-        #create DTM
-        myDtm = TermDocumentMatrix(myCorpus,
-                                   control = list(minWordLength = 3))
-        #Frequent Terms and Associations
-        freqTerms <- findFreqTerms(myDtm, lowfreq = 1)
-        m <- as.matrix(myDtm)
-        # calculate the frequency of words
-        v <- sort(rowSums(m), decreasing = TRUE)
-        myNames <- names(v)
-        d <- data.frame(word = myNames, freq = v)
-        wctop <-
-            wordcloud(d$word,
-                      d$freq,
-                      min.freq = 50,
-                      colors = brewer.pal(9, "Set1"))
-    })
+    output$word_cloud1 <- renderPlot(height = 500,
+                                     width = "auto",
+                                     {
+                                         data %>% filter(!is.na(summary)) -> dfn0
+                                         dfn0 %>% filter(summary != "") -> dfn
+                                         text <-
+                                             sample(dfn$summary, nrow(dfn) / 100)
+                                         myCorpus <-
+                                             Corpus(VectorSource(text))
+                                         #myCorpus = tm_map(myCorpus, content_transformer(tolower))
+                                         # remove punctuation
+                                         myCorpus = tm_map(myCorpus, removePunctuation)
+                                         myCorpus = tm_map(myCorpus, removeNumbers)
+                                         # remove stopwords for English
+                                         myCorpus = tm_map(myCorpus,
+                                                           removeWords,
+                                                           c(stopwords("english"), stopwords("SMART"), "the"))
+                                         #create DTM
+                                         myDtm = TermDocumentMatrix(myCorpus,
+                                                                    control = list(minWordLength = 3))
+                                         #Frequent Terms and Associations
+                                         freqTerms <-
+                                             findFreqTerms(myDtm, lowfreq = 1)
+                                         m <- as.matrix(myDtm)
+                                         # calculate the frequency of words
+                                         v <-
+                                             sort(rowSums(m), decreasing = TRUE)
+                                         myNames <- names(v)
+                                         d <-
+                                             data.frame(word = myNames, freq = v)
+                                         wctop <-
+                                             wordcloud(d$word,
+                                                       d$freq,
+                                                       min.freq = 50,
+                                                       colors = brewer.pal(9, "Set1"))
+                                     })
     
-    output$dendogram1 <- renderPlot({
-        mydata.df <-
-            as.data.frame(inspect(removeSparseTerms(myDtm, sparse = 0.99)))
-        mydata.df.scale <- scale(mydata.df)
-        d <-
-            dist(mydata.df.scale, method = "euclidean") # distance matrix
-        fit <- hclust(d, method = "ward.D")
-        plot(
-            fit,
-            xaxt = 'n',
-            yaxt = 'n',
-            xlab = "Word clustering using ward.D method",
-            ylab = "",
-            main = "Cluster Dendogram for words used in summary description"
-        ) # display dendogram?
-        groups <- cutree(fit, k = 5) # cut tree into 5 clusters
-        # draw dendogram with blue borders around the 5 clusters
-        rect.hclust(fit, k = 5, border = "blue")
-    })
+    output$dendogram1 <- renderPlot(height = 500,
+                                    width = "auto",
+                                    {
+                                        data %>% filter(!is.na(summary)) -> dfn0
+                                        dfn0 %>% filter(summary != "") -> dfn
+                                        text <-
+                                            sample(dfn$summary, nrow(dfn) / 100)
+                                        myCorpus <-
+                                            Corpus(VectorSource(text))
+                                        #myCorpus = tm_map(myCorpus, content_transformer(tolower))
+                                        # remove punctuation
+                                        myCorpus = tm_map(myCorpus, removePunctuation)
+                                        myCorpus = tm_map(myCorpus, removeNumbers)
+                                        # remove stopwords for English
+                                        myCorpus = tm_map(myCorpus,
+                                                          removeWords,
+                                                          c(stopwords("english"), stopwords("SMART"), "the"))
+                                        #create DTM
+                                        myDtm = TermDocumentMatrix(myCorpus,
+                                                                   control = list(minWordLength = 3))
+                                        mydata.df <-
+                                            as.data.frame(inspect(removeSparseTerms(myDtm, sparse = 0.99)))
+                                        mydata.df.scale <-
+                                            scale(mydata.df)
+                                        d <-
+                                            dist(mydata.df.scale, method = "euclidean") # distance matrix
+                                        fit <-
+                                            hclust(d, method = "ward.D")
+                                        plot(
+                                            fit,
+                                            xaxt = 'n',
+                                            yaxt = 'n',
+                                            xlab = "Word clustering using ward.D method",
+                                            ylab = "",
+                                            main = "Cluster Dendogram for words used in summary description"
+                                        ) # display dendogram?
+                                        groups <-
+                                            cutree(fit, k = 5) # cut tree into 5 clusters
+                                        # draw dendogram with blue borders around the 5 clusters
+                                        rect.hclust(fit, k = 5, border = "blue")
+                                    })
     
     output$downloadData <- downloadHandler(
         filename = "data.csv",
