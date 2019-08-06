@@ -16,8 +16,8 @@ library(shinyGlobe)
 
 
 shinyServer(function(input, output, session) {
-    data_lite <- read.csv("../gtd_lite2.csv")
-    data <- read.csv("../globalterrorismdb_0718dist.csv")
+    data_lite <- read.csv("gtd_lite2.csv")
+    data <- read.csv("globalterrorismdb_0718dist.csv")
     
     output$data_explorer <- DT::renderDataTable({
         data_lite
