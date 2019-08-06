@@ -96,8 +96,9 @@ body <- dashboardBody(tabItems(
             fluidRow(
                 tabBox(
                     title = "Missing Values",
-                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), plotOutput("raw_missing")),
-                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), plotOutput("lite_missing"))
+                    height = "200",
+                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), withSpinner(plotOutput('missingdata'))),
+                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), withSpinner(plotOutput('missingdata_lite')))
                 )
             )),
     tabItem(tabName = "page3",

@@ -11,11 +11,11 @@ library(shinyWidgets)
 library(ggplot2)
 library(leaflet)
 library(plotly)
+library(DataExplorer)
 
 
 shinyServer(function(input, output, session) {
     data_lite <- read.csv("../gtd_lite2.csv")
-    gtd <- read.csv("../gtd_lite2.csv")
     
     output$data_explorer <- DT::renderDataTable({
         data_lite
@@ -26,9 +26,9 @@ shinyServer(function(input, output, session) {
         sliderInput(
             "year",
             label = "Please select the period ",
-            min =  min(gtd$iyear, na.rm = T),
-            max = max(gtd$iyear, na.rm = T),
-            value = c(min(gtd$iyear, na.rm = T), max(gtd$iyear, na.rm =
+            min =  min(data_lite$iyear, na.rm = T),
+            max = max(data_lite$iyear, na.rm = T),
+            value = c(min(data_lite$iyear, na.rm = T), max(data_lite$iyear, na.rm =
                                                          T)),
             sep = "",
             step = 1
@@ -39,10 +39,10 @@ shinyServer(function(input, output, session) {
         pickerInput(
             'region',
             label = 'Region',
-            choices = unique(as.character(gtd$region)),
+            choices = unique(as.character(data_lite$region)),
             options = list(`actions-box` = TRUE),
             multiple = TRUE,
-            selected = unique(gtd$region)
+            selected = unique(data_lite$region)
         )
     })
     
@@ -50,10 +50,10 @@ shinyServer(function(input, output, session) {
         pickerInput(
             'country',
             'Country',
-            choices = unique(as.character(gtd$country)),
+            choices = unique(as.character(data_lite$country)),
             options = list(`actions-box` = TRUE),
             multiple = TRUE,
-            selected = unique(gtd$country)
+            selected = unique(data_lite$country)
         )
     })
     
@@ -61,10 +61,10 @@ shinyServer(function(input, output, session) {
         pickerInput(
             'attack',
             label = 'Attack Type',
-            choices = unique(as.character(gtd$attacktype)),
+            choices = unique(as.character(data_lite$attacktype)),
             options = list(`actions-box` = TRUE),
             multiple = TRUE,
-            selected = unique(gtd$attacktype)
+            selected = unique(data_lite$attacktype)
         )
     })
     
@@ -72,7 +72,7 @@ shinyServer(function(input, output, session) {
         #showModal(modalDialog("Loading Data...", size = "l"))
         
         #filter for selected regions
-        gtd_sub <- gtd[gtd$region %in% input$region,]
+        gtd_sub <- data_lite[data_lite$region %in% input$region,]
         
         #filter for selected countries
         gtd_sub <- gtd_sub[gtd_sub$country %in% input$country,]
@@ -92,7 +92,7 @@ shinyServer(function(input, output, session) {
     
     observe({
         input$region
-        sel <- unique(gtd[gtd$region == input$region, "country"])
+        sel <- unique(data_lite[data_lite$region == input$region, "country"])
         updateSelectInput(
             session = session,
             inputId = "country",
@@ -108,25 +108,25 @@ shinyServer(function(input, output, session) {
         updateSliderInput(
             session = session,
             inputId = "year",
-            value = c(min(gtd$iyear, na.rm = T), max(gtd$iyear, na.rm = T))
+            value = c(min(data_lite$iyear, na.rm = T), max(data_lite$iyear, na.rm = T))
         )
         updateSelectInput(
             session = session,
             inputId = "region",
-            choices = unique(as.character(gtd$region)),
-            selected = unique(gtd$region)
+            choices = unique(as.character(data_lite$region)),
+            selected = unique(data_lite$region)
         )
         updateSelectInput(
             session = session,
             inputId = "country",
-            choices = unique(as.character(gtd$country)),
-            selected = unique(gtd$country)
+            choices = unique(as.character(data_lite$country)),
+            selected = unique(data_lite$country)
         )
         updateSelectInput(
             session = session,
             inputId = "attack",
-            choices = unique(as.character(gtd$attacktype)),
-            selected = unique(gtd$attacktype)
+            choices = unique(as.character(data_lite$attacktype)),
+            selected = unique(data_lite$attacktype)
         )
     })
     
@@ -311,6 +311,21 @@ shinyServer(function(input, output, session) {
              width = 500,
              height = 500)
     }, deleteFile = FALSE)
+    
+    output$missingdata_lite <- renderPlot(
+        height = 700,
+        width = "auto",
+        {
+        plot_missing(data_lite)
+    })
+    
+    output$missingdata <- renderPlot(
+        height = 700,
+        width = "auto",
+        {
+        plot_missing(data)
+        })
+    
     
     output$killings1 <- renderPlot({
         data_lite %>% filter(nkill > 0) -> dfk
