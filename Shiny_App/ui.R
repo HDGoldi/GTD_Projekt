@@ -5,7 +5,7 @@ library(shinycssloaders)
 library(markdown)
 library(plotly)
 library(leaflet)
-library(shinyGlobe)
+#library(shinyGlobe)
 
 header <- dashboardHeader(title = "Global Terrorism Database",
                           titleWidth = 300)
@@ -114,32 +114,91 @@ body <- dashboardBody(tabItems(
                 valueBoxOutput("total_killed")
             ),
             withSpinner(DT::dataTableOutput("datatable"))),
+
     tabItem(tabName = "page4",
             h2("Univariate Insights into Global Terror"),
+            fluidRow(box(width = 10,
+                         includeMarkdown("univariat.md")) 
+            ),
+            fluidRow(
+                box(width = 10, 
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot1"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot2"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot3"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot4"))
+                    )
+                )
+            ),
+            
+            fluidRow(box(width = 10,
+                         includeMarkdown("univariat2.md")) 
+            ),
+            fluidRow(
+                box(width = 10,
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot5"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot6"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot7"))
+                    ),
+                    column(width  = 3,
+                           withSpinner(plotOutput("boxplot8"))
+                    )
+                )
+            ),
+            
+            fluidRow(box(width = 10,
+                         includeMarkdown("univariat3.md")) 
+            ),
+            
+            fluidRow(
+                tabBox(
+                    title = "Casualty Count Distributions (Multivariat?)",
+                    width = "12",
+                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("casdist_year"))),
+                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("casdist_region"))),
+                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("casdist_attack"))),
+                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("casdist_weap")))
+                )
+                
+            ),
+            
+            
             fluidRow(valueBoxOutput("attack_year"),
                      valueBoxOutput("casual_att")
-                
+                     
             ),
             fluidRow(
                 tabBox(
                     title = "Attack Count Distributions",
-                    width = "8",
-                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("distyear"))),
-                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("dist_region1"))),
-                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("dist_attack"))),
-                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("dist_weap")))
+                    width = "12",
+                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("atdist_year"))),
+                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("atdist_region"))),
+                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("atdist_attack"))),
+                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("atdist_weap")))
                 )
                 
             ),
             fluidRow(
                 tabBox(
-                    title = "Enhanced attack Count Distributions",
-                    width = "8",
-                    tabPanel("By Year", h3(""), withSpinner(plotlyOutput("dist_region2"))),
-                    tabPanel("By Region", h3(""), withSpinner(plotlyOutput("distyear2")))
+                    title = "Multivariate?",
+                    width = "12",
+                    tabPanel("Attacks By Attacktype & Region", h3(""), withSpinner(plotlyOutput("dist_region2"))),
+                    tabPanel("Attacks By Region & Year", h3(""), withSpinner(plotlyOutput("distyear2")))
                 )
                 
             )),
+    
     tabItem(tabName = "page5",
             h2("Multivariate Insights into Global Terror"),
             fluidRow(
