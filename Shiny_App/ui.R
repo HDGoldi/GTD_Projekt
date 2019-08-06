@@ -5,7 +5,7 @@ library(shinycssloaders)
 library(markdown)
 library(plotly)
 library(leaflet)
-#library(shinyGlobe)
+library(shinyGlobe)
 
 header <- dashboardHeader(title = "Global Terrorism Database",
                           titleWidth = 300)
