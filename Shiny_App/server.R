@@ -535,10 +535,17 @@ shinyServer(function(input, output, session) {
                                         rect.hclust(fit, k = 5, border = "blue")
                                     })
     
+    output$downloadData_clean <- downloadHandler(
+        filename = "data_clean.csv",
+        content = function(file) {
+            write.csv(data_lite, file)
+        }
+    )
+    
     output$downloadData <- downloadHandler(
         filename = "data.csv",
         content = function(file) {
-            write.csv(data_lite, file)
+            write.csv(data, file)
         }
     )
     

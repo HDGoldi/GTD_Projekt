@@ -89,7 +89,8 @@ body <- dashboardBody(tabItems(
                         ),
                         "The clean data set used in this application is also available to download."
                     ),
-                    downloadButton('downloadData', 'Download Clean Data')
+                    downloadButton('downloadData_clean', 'Download Clean Data'),
+                    downloadButton('downloadData', 'Download RAW Data')
                 )
             )),
     tabItem(tabName = "page2",
