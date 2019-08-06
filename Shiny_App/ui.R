@@ -5,6 +5,7 @@ library(shinycssloaders)
 library(markdown)
 library(plotly)
 library(leaflet)
+library(shinyGlobe)
 
 header <- dashboardHeader(title = "Global Terrorism Database",
                           titleWidth = 300)
@@ -88,7 +89,8 @@ body <- dashboardBody(tabItems(
                         ),
                         "The clean data set used in this application is also available to download."
                     ),
-                    downloadButton('downloadData', 'Download Clean Data')
+                    downloadButton('downloadData_clean', 'Download Clean Data'),
+                    downloadButton('downloadData', 'Download RAW Data')
                 )
             )),
     tabItem(tabName = "page2",
@@ -96,8 +98,9 @@ body <- dashboardBody(tabItems(
             fluidRow(
                 tabBox(
                     title = "Missing Values",
-                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), plotOutput("raw_missing")),
-                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), plotOutput("lite_missing"))
+                    height = "200",
+                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), withSpinner(plotOutput('missingdata'))),
+                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), withSpinner(plotOutput('missingdata_lite')))
                 )
             )),
     tabItem(tabName = "page3",
@@ -155,10 +158,19 @@ body <- dashboardBody(tabItems(
                 )
             )),
     tabItem(tabName = "page6",
-            h2("Top 1000 Cities by Attack Count"),
             fluidRow(box(
-                width = "8",
-                leafletOutput("map")
+                width = "10",
+                h2("Top 1000 Cities by Attack Count"),
+                withSpinner(leafletOutput("map"))
+            ),
+            fluidRow(
+                box(
+                    width = "12",
+                    height = 1000,
+                    title = "Globe View",
+                    textOutput("globeText"),
+                    withSpinner(globeOutput("globe"))
+                )
             )))
 ))
 

@@ -30,10 +30,10 @@ ggbarplot(data, x = "country", y = "nkill",
           sort.by.groups = FALSE,     # Don't sort inside each group
           x.text.angle = 90           # Rotate vertically x axis texts
           )
-plot_str(data)
-plot_missing(data)
-plot_histogram(data)
-plot_correlation(data, type = 'all','iyear')
+plot_str(data_lite)
+plot_missing(data_lite)
+plot_histogram(data_lite)
+plot_correlation(data_lite, type = 'continuous', cor_args = list("use" = "pairwise.complete.obs"))
 
 
 #correlation
@@ -162,3 +162,10 @@ plot(fit, xaxt = 'n', yaxt='n', xlab = "Word clustering using ward.D method", yl
 groups <- cutree(fit, k=5) # cut tree into 5 clusters
 # draw dendogram with blue borders around the 5 clusters
 rect.hclust(fit, k=5, border="blue")
+
+library(utils)
+myfile <- read.csv("../globalterrorismdb_0718dist.csv")
+
+library(readr)
+test = read_csv("gtd.csv.zip")
+
