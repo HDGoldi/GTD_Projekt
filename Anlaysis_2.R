@@ -30,10 +30,10 @@ ggbarplot(data, x = "country", y = "nkill",
           sort.by.groups = FALSE,     # Don't sort inside each group
           x.text.angle = 90           # Rotate vertically x axis texts
           )
-plot_str(data)
-plot_missing(data)
-plot_histogram(data)
-plot_correlation(data, type = 'all','iyear')
+plot_str(data_lite)
+plot_missing(data_lite)
+plot_histogram(data_lite)
+plot_correlation(data_lite, type = 'continuous', cor_args = list("use" = "pairwise.complete.obs"))
 
 
 #correlation

@@ -12,6 +12,7 @@ library(ggplot2)
 library(leaflet)
 library(plotly)
 library(DataExplorer)
+library(shinyGlobe)
 
 
 shinyServer(function(input, output, session) {
@@ -288,6 +289,27 @@ shinyServer(function(input, output, session) {
                 ),
                 radius = sqrt(gtd_map$attackcount * 0.5)
             )
+    })
+    
+    output$globe <- renderGlobe({
+        d <- plot_gtdsub()
+        d <- d %>% mutate(casualties = .data$nkill + .data$nwound)
+        d <- d[!is.na(d$latitude) & !is.na(d$longitude), ]
+        d <- d[!is.na(d$casualties), ]
+        d <-
+            d %>% mutate(size = (d$casualties / max(d$casualties)) * 100)
+        d <- sample_n(d, 1000, replace = TRUE)
+        
+        output$globeText <- renderText({
+            paste(
+                "Killed:",
+                sum(d$nkill, na.rm = TRUE),
+                " - ",
+                "Wounded:",
+                sum(d$nwound, na.rm = TRUE)
+            )
+        })
+        d[, c("latitude", "longitude", "size")]
     })
     
     output$raw_missing <- renderImage({
