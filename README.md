@@ -4,5 +4,6 @@ The Global Terrorism Database (GTD) is an open-source database including informa
 
 ## Demo
 The most up to date version of the app is deployed at Shinyapps.io here: 
+
 https://jan-sulaiman.shinyapps.io/HS_Aalen_GTD_Project/
 
