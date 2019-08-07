@@ -1,0 +1,19 @@
+.main-sidebar, .shiny-bound-input {
+    background-color : #194A7D;
+  }
+
+  h2 {
+      fill: black;
+  }
+
+  p {
+      fill: black;
+}
+
+ul {
+    fill: black;
+}
+
+li {
+    fill: black;
+}

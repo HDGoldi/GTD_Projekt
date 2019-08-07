@@ -19,12 +19,6 @@ sidebar <- dashboardSidebar(
             icon = icon("dashboard"),
             tabName = "page1"
         ),
-        menuItem(
-            "Data Preparation",
-            icon = icon("database"),
-            
-            tabName = "page2"
-        ),
         menuItem("Data Explorer", icon = icon("table"), tabName = "page3"),
         menuItem(
             "Univariate Analysis",
@@ -55,8 +49,10 @@ body <- dashboardBody(tabItems(
             h2("Overview & Table of Contents"),
             fluidRow(
                 box(
+                    width = 12,
+                    height = "auto",
                     h2("Global-Terrorism Database"),
-                    background = "light-blue",
+                    style = "font-size: 120%; background-color : #29abe2;",
                     solidHeader = TRUE,
                     p(
                         "The Global Terrorism Database (GTD) is an open-source database including information on
@@ -76,8 +72,10 @@ body <- dashboardBody(tabItems(
                     
                 ),
                 box(
+                    width = 12,
+                    height = "auto",
                     h2("Data Source"),
-                    style = "font-size: 120%; background-color : #e77e7e;",
+                    style = "font-size: 120%; background-color : #77D245;",
                     solidHeader = TRUE,
                     p(
                         "GTD can be obtained from",
@@ -87,25 +85,34 @@ body <- dashboardBody(tabItems(
                             target = "_blank",
                             style = "color :white; font-weight : bold;"
                         ),
-                        "The clean data set used in this application is also available to download."
+                        "The clean data set used in this application is also available to download.",
+                        "For everyone interested in working with the same dataset we provide the RAW data we used plus the prepared and cleaned data for download:"
                     ),
                     downloadButton('downloadData_clean', 'Download Clean Data'),
                     downloadButton('downloadData', 'Download RAW Data')
-                )
-            )),
-    tabItem(tabName = "page2",
-            h2("Preparation of Raw Data"),
-            fluidRow(
-                tabBox(
-                    title = "Missing Values",
-                    height = "200",
-                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), withSpinner(plotOutput('missingdata'))),
-                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), withSpinner(plotOutput('missingdata_lite')))
+                ),
+                box(
+                    width = 12,
+                    height = "auto",
+                    h2("Big data cleaning required for RAW Data"),
+                    style = "font-size: 120%; background-color : #FF9F00;",
+                    solidHeader = TRUE,
+                    p(
+                        "GTD contains 135 variables with a lot of missing values in the RAW version",
+                        "Therefore we started of by kicking out missing values based on a quick analysis of the different features."
+                    ),
+                    withSpinner(plotOutput('missingdata')),
+                    p(
+                        "Kicking out many of the features with a high amount of missing values we condenst the dataset to 33 variables.",
+                        "These features have just a few missing values, mostly for the summary text of the event."
+                    ),
+                    withSpinner(plotOutput('missingdata_lite'))
                 )
             )),
     tabItem(tabName = "page3",
             h2("Exploring the Dataset"),
             fluidRow(
+                width = 12,
                 valueBoxOutput("total_values"),
                 valueBoxOutput("total_years"),
                 valueBoxOutput("total_countries"),
@@ -115,96 +122,82 @@ body <- dashboardBody(tabItems(
             ),
             withSpinner(DT::dataTableOutput("datatable"))),
 
-    tabItem(tabName = "page4",
-            h2("Univariate Insights into Global Terror"),
-            fluidRow(box(width = 12,
-                         includeMarkdown("univariat.md")) 
-            ),
-            fluidRow(
-                box(width = 12, 
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot1"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot2"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot3"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot4"))
-                    )
-                )
-            ),
-            
-            fluidRow(box(width = 12,
-                         includeMarkdown("univariat2.md")) 
-            ),
-            fluidRow(
-                box(width = 12,
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot5"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot6"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot7"))
-                    ),
-                    column(width  = 3,
-                           withSpinner(plotOutput("boxplot8"))
-                    )
-                )
-            ),
-            
-            fluidRow(box(width = 12,
-                         includeMarkdown("univariat3.md")) 
-            ),
-            
-            fluidRow(
-                tabBox(
-                    title = "Casualty Count Distributions (Multivariat?)",
-                    width = "12",
-                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("casdist_year"))),
-                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("casdist_region"))),
-                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("casdist_attack"))),
-                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("casdist_weap")))
-                )
-                
-            ),
-            
-            
-            fluidRow(valueBoxOutput("attack_year"),
-                     valueBoxOutput("casual_att")
-                     
-            ),
-            fluidRow(
-                tabBox(
-                    title = "Attack Count Distributions",
-                    width = "12",
-                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("atdist_year"))),
-                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("atdist_region"))),
-                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("atdist_attack"))),
-                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("atdist_weap")))
-                )
-                
-            ),
-            fluidRow(
-                tabBox(
-                    title = "Multivariate?",
-                    width = "12",
-                    tabPanel("Attacks By Attacktype & Region", h3(""), withSpinner(plotlyOutput("dist_region2"))),
-                    tabPanel("Attacks By Region & Year", h3(""), withSpinner(plotlyOutput("distyear2")))
-                )
-                
-            )),
+    tabItem(
+        tabName = "page4",
+        h2("Univariate Insights into Global Terror"),
+        fluidRow(box(width = 12,
+                     includeMarkdown("univariat.md"))),
+        fluidRow(box(
+            width = 12,
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot1"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot2"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot3"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot4")))
+        )),
+        
+        fluidRow(box(
+            width = 12,
+            includeMarkdown("univariat2.md")
+        )),
+        fluidRow(box(
+            width = 12,
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot5"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot6"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot7"))),
+            column(width  = 3,
+                   withSpinner(plotOutput("boxplot8")))
+        )),
+        
+        fluidRow(box(
+            width = 12,
+            includeMarkdown("univariat3.md")
+        )),
+    fluidRow(width = 12,
+             valueBoxOutput("attack_year"),
+             valueBoxOutput("casual_att")),
+    fluidRow(
+        tabBox(
+            title = "Attack Count Distributions",
+            width = 12,
+            tabPanel("By Year", h3(""), withSpinner(plotlyOutput("atdist_year"))),
+            tabPanel("By Region", h3(""), withSpinner(plotlyOutput("atdist_region"))),
+            tabPanel("By Attack Type", h3(""), withSpinner(plotlyOutput("atdist_attack"))),
+            tabPanel("By Weapon Type", h3(""), withSpinner(plotlyOutput("atdist_weap")))
+        )
+        
+    )
+), 
     
     tabItem(tabName = "page5",
             h2("Multivariate Insights into Global Terror"),
             fluidRow(
                 tabBox(
+                    title = "Casualty Count Distributions by different Dimensions",
+                    width = 12,
+                    tabPanel("By Year",h3(""), withSpinner(plotlyOutput("casdist_year"))),
+                    tabPanel("By Region",h3(""), withSpinner(plotlyOutput("casdist_region"))),
+                    tabPanel("By Attack Type",h3(""), withSpinner(plotlyOutput("casdist_attack"))),
+                    tabPanel("By Weapon Type",h3(""), withSpinner(plotlyOutput("casdist_weap")))
+                )),
+            fluidRow(
+                tabBox(
+                    title = "Detailed view on Attacks by Region and Year together with Attacktype used",
+                    width = 12,
+                    tabPanel("Attacks By Attacktype & Region", h3(""), withSpinner(plotlyOutput("dist_region2"))),
+                    tabPanel("Attacks By Region & Year", h3(""), withSpinner(plotlyOutput("distyear2")))
+                ) 
+            ),
+            fluidRow(
+                tabBox(
                     title = "Killings",
-                    width = "12",
+                    width = 12,
                     tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), includeMarkdown("killings1.md")),
                     tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), includeMarkdown("killings2.md")),
                     tabPanel("Countries & Years",h3("Killings per Countries and Years - size is proportional with the number of killings"), withSpinner(plotOutput('killings3')), includeMarkdown("killings3.md"))
@@ -212,6 +205,7 @@ body <- dashboardBody(tabItems(
             ),
             fluidRow(
                 tabBox(
+                    width = 12,
                     title = "Summary - Text Insights",
                     tabPanel("Wordcloud for Summary Text", withSpinner(plotOutput('word_cloud1'))),
                     tabPanel("Denogram for Summary Text", withSpinner(plotOutput('dendogram1')))
@@ -219,13 +213,13 @@ body <- dashboardBody(tabItems(
             )),
     tabItem(tabName = "page6",
             fluidRow(box(
-                width = "12",
+                width = 12,
                 h2("Top 1000 Cities by Attack Count"),
                 withSpinner(leafletOutput("map"))
             ),
             fluidRow(
                 box(
-                    width = "12",
+                    width = 12,
                     height = 1000,
                     title = "Globe View",
                     textOutput("globeText"),

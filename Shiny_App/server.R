@@ -394,37 +394,15 @@ shinyServer(function(input, output, session) {
         d[, c("latitude", "longitude", "size")]
     })
     
-    output$raw_missing <- renderImage({
-        filename <- normalizePath(file.path(
-            '../files',
-            paste('raw_missing', input$n, '.png', sep =
-                      '')
-        ))
-        list(src = filename,
-             width = 500,
-             height = 500)
-    }, deleteFile = FALSE)
     
-    
-    output$lite_missing <- renderImage({
-        filename <- normalizePath(file.path(
-            '../files',
-            paste('missing_lite', input$n, '.png', sep =
-                      '')
-        ))
-        list(src = filename,
-             width = 500,
-             height = 500)
-    }, deleteFile = FALSE)
-    
-    output$missingdata_lite <- renderPlot(height = 700,
-                                          width = "auto",
+    output$missingdata_lite <- renderPlot(#height = 700,
+                                         # width = "auto",
                                           {
                                               plot_missing(data_lite)
                                           })
     
-    output$missingdata <- renderPlot(height = 700,
-                                     width = "auto",
+    output$missingdata <- renderPlot(#height = 700,
+                                     #width = "auto",
                                      {
                                          plot_missing(data)
                                      })
