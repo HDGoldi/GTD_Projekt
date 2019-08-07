@@ -117,11 +117,11 @@ body <- dashboardBody(tabItems(
 
     tabItem(tabName = "page4",
             h2("Univariate Insights into Global Terror"),
-            fluidRow(box(width = 10,
+            fluidRow(box(width = 12,
                          includeMarkdown("univariat.md")) 
             ),
             fluidRow(
-                box(width = 10, 
+                box(width = 12, 
                     column(width  = 3,
                            withSpinner(plotOutput("boxplot1"))
                     ),
@@ -137,11 +137,11 @@ body <- dashboardBody(tabItems(
                 )
             ),
             
-            fluidRow(box(width = 10,
+            fluidRow(box(width = 12,
                          includeMarkdown("univariat2.md")) 
             ),
             fluidRow(
-                box(width = 10,
+                box(width = 12,
                     column(width  = 3,
                            withSpinner(plotOutput("boxplot5"))
                     ),
@@ -157,7 +157,7 @@ body <- dashboardBody(tabItems(
                 )
             ),
             
-            fluidRow(box(width = 10,
+            fluidRow(box(width = 12,
                          includeMarkdown("univariat3.md")) 
             ),
             
@@ -204,6 +204,7 @@ body <- dashboardBody(tabItems(
             fluidRow(
                 tabBox(
                     title = "Killings",
+                    width = "12",
                     tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), includeMarkdown("killings1.md")),
                     tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), includeMarkdown("killings2.md")),
                     tabPanel("Countries & Years",h3("Killings per Countries and Years - size is proportional with the number of killings"), withSpinner(plotOutput('killings3')), includeMarkdown("killings3.md"))
@@ -218,7 +219,7 @@ body <- dashboardBody(tabItems(
             )),
     tabItem(tabName = "page6",
             fluidRow(box(
-                width = "10",
+                width = "12",
                 h2("Top 1000 Cities by Attack Count"),
                 withSpinner(leafletOutput("map"))
             ),

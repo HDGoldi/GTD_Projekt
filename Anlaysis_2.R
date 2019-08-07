@@ -37,7 +37,7 @@ plot_correlation(data_lite, type = 'continuous', cor_args = list("use" = "pairwi
 
 
 #correlation
-cor_data <- data_lite[, c("country", "region","success","attacktype","targtype","natlty","weaptype")]
+cor_data <- data_lite[, c("country_txt", "region","success","attacktype","targtype","natlty","weaptype")]
 res <- cor(cor_data)
 round(res, 2)
 

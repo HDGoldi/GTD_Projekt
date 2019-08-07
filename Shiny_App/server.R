@@ -19,9 +19,10 @@ shinyServer(function(input, output, session) {
     data_lite <- read.csv("gtd_lite2.csv")
     data <- read.csv("globalterrorismdb_0718dist.csv")
     
-    output$data_explorer <- DT::renderDataTable({
-        data_lite
-    })
+    output$data_explorer <- DT::renderDataTable(
+        data_lite,
+        options = list(scrollX = TRUE)
+            )
     
     #data explorer UI
     output$yearSelection <- renderUI({
@@ -145,36 +146,36 @@ shinyServer(function(input, output, session) {
     
     #boxplots
     output$boxplot1 <- renderPlot({
-        boxplot(gtd$nkill, xlab = "nkill")
+        boxplot(data_lite$nkill, xlab = "nkill")
     })
     
     output$boxplot2 <- renderPlot({
-        boxplot(gtd$nkillter, xlab = "nkillter")
+        boxplot(data_lite$nkillter, xlab = "nkillter")
     })
     
     output$boxplot3 <- renderPlot({
-        boxplot(gtd$nwound, xlab = "nwound")
+        boxplot(data_lite$nwound, xlab = "nwound")
     })
     
     output$boxplot4 <- renderPlot({
-        boxplot(gtd$nwoundte, xlab = "nwoundte")
+        boxplot(data_lite$nwoundte, xlab = "nwoundte")
     })
     
     #boxplots w/o outliers
     output$boxplot5 <- renderPlot({
-        boxplot(gtd$nkill, outline = FALSE, xlab = "nkill w/o outliers")
+        boxplot(data_lite$nkill, outline = FALSE, xlab = "nkill w/o outliers")
     })
     
     output$boxplot6 <- renderPlot({
-        boxplot(gtd$nkillter, outline = FALSE, xlab = "nkillter w/o outliers")
+        boxplot(data_lite$nkillter, outline = FALSE, xlab = "nkillter w/o outliers")
     })
     
     output$boxplot7 <- renderPlot({
-        boxplot(gtd$nwound, outline = FALSE, xlab = "nwound w/o outliers")
+        boxplot(data_lite$nwound, outline = FALSE, xlab = "nwound w/o outliers")
     })
     
     output$boxplot8 <- renderPlot({
-        boxplot(gtd$nwoundte, outline = FALSE, xlab = "nwoundte w/o outliers")
+        boxplot(data_lite$nwoundte, outline = FALSE, xlab = "nwoundte w/o outliers")
     })
     
     #Plot casualty distribution by year
