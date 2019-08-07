@@ -19,12 +19,6 @@ sidebar <- dashboardSidebar(
             icon = icon("dashboard"),
             tabName = "page1"
         ),
-        menuItem(
-            "Data Preparation",
-            icon = icon("database"),
-            
-            tabName = "page2"
-        ),
         menuItem("Data Explorer", icon = icon("table"), tabName = "page3"),
         menuItem(
             "Univariate Analysis",
@@ -56,9 +50,9 @@ body <- dashboardBody(tabItems(
             fluidRow(
                 box(
                     width = 12,
-                    height = 200,
+                    height = "auto",
                     h2("Global-Terrorism Database"),
-                    background = "light-blue",
+                    style = "font-size: 120%; background-color : #29abe2;",
                     solidHeader = TRUE,
                     p(
                         "The Global Terrorism Database (GTD) is an open-source database including information on
@@ -79,9 +73,9 @@ body <- dashboardBody(tabItems(
                 ),
                 box(
                     width = 12,
-                    height = 200,
+                    height = "auto",
                     h2("Data Source"),
-                    style = "font-size: 120%; background-color : #e77e7e;",
+                    style = "font-size: 120%; background-color : #77D245;",
                     solidHeader = TRUE,
                     p(
                         "GTD can be obtained from",
@@ -91,21 +85,28 @@ body <- dashboardBody(tabItems(
                             target = "_blank",
                             style = "color :white; font-weight : bold;"
                         ),
-                        "The clean data set used in this application is also available to download."
+                        "The clean data set used in this application is also available to download.",
+                        "For everyone interested in working with the same dataset we provide the RAW data we used plus the prepared and cleaned data for download:"
                     ),
                     downloadButton('downloadData_clean', 'Download Clean Data'),
                     downloadButton('downloadData', 'Download RAW Data')
-                )
-            )),
-    tabItem(tabName = "page2",
-            h2("Preparation of Raw Data"),
-            fluidRow(
-                tabBox(
+                ),
+                box(
                     width = 12,
-                    title = "Missing Values",
-                    height = "200",
-                    tabPanel("Original Dataset", h3("Total of 135 variables with a lot of missing values"), withSpinner(plotOutput('missingdata'))),
-                    tabPanel("Cleaned Dataset", h3("Total of 33 variables with cleaned data and just a few missing values"), withSpinner(plotOutput('missingdata_lite')))
+                    height = "auto",
+                    h2("Big data cleaning required for RAW Data"),
+                    style = "font-size: 120%; background-color : #FF9F00;",
+                    solidHeader = TRUE,
+                    p(
+                        "GTD contains 135 variables with a lot of missing values in the RAW version",
+                        "Therefore we started of by kicking out missing values based on a quick analysis of the different features."
+                    ),
+                    withSpinner(plotOutput('missingdata')),
+                    p(
+                        "Kicking out many of the features with a high amount of missing values we condenst the dataset to 33 variables.",
+                        "These features have just a few missing values, mostly for the summary text of the event."
+                    ),
+                    withSpinner(plotOutput('missingdata_lite'))
                 )
             )),
     tabItem(tabName = "page3",
