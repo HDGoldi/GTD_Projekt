@@ -75,7 +75,6 @@ shinyServer(function(input, output, session) {
     })
     
     plot_gtdsub <- reactive({
-        #showModal(modalDialog("Loading Data...", size = "l"))
         
         #filter for selected regions
         gtd_sub <- data_lite[data_lite$region %in% input$region,]
@@ -91,8 +90,6 @@ shinyServer(function(input, output, session) {
             subset(gtd_sub,
                    gtd_sub$iyear >= input$year[1] &
                        gtd_sub$iyear <= input$year[2])
-        
-        #removeModal()
     })
     
     observe({
@@ -109,8 +106,7 @@ shinyServer(function(input, output, session) {
     
     observe({
         input$tabitems
-        print("Tab Event")
-        
+
         updateSliderInput(
             session = session,
             inputId = "year",
@@ -224,15 +220,18 @@ shinyServer(function(input, output, session) {
     
     #Plot attack distribution by year
     output$atdist_year <- renderPlotly({
-        p1 <-
-            ggplot(plot_gtdsub(), aes(x = .data$iyear)) + geom_histogram(stat = "count")
-        ggplotly(p1)
+        p <-
+            ggplot(plot_gtdsub(), aes(x = .data$iyear)) + geom_bar(stat = "count") + xlab("Year") + ylab("Attack Count")
+        ggplotly(p)
     })
     
     #Plot attack distribution by region
     output$atdist_region <- renderPlotly({
-        d <- plot_gtdsub()
-        plot_ly(d, x = d$region, type = "histogram")
+        p <-
+            ggplot(plot_gtdsub(), aes(x = .data$region), colours()) + geom_bar(stat = "count") + xlab("Region") + ylab("Attack Count")
+        p <-
+            p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+        ggplotly(p, tooltip = c("y","x"))
     })
     
     #Plot attack distribution by attacktype
@@ -240,7 +239,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$attacktype)
         p <-
-            ggplot(d, aes(x = .data$`d$attacktype`, y = .data$n)) + geom_bar(stat = "identity")
+            ggplot(d, aes(x = .data$`d$attacktype`, y = .data$n)) + geom_bar(stat = "identity") + xlab("Attack Type") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
@@ -251,7 +250,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$weaptype)
         p <-
-            ggplot(d, aes(x = .data$`d$weaptype`, y = .data$n)) + geom_bar(stat = "identity")
+            ggplot(d, aes(x = .data$`d$weaptype`, y = .data$n)) + geom_bar(stat = "identity") + xlab("Weapon Type") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
@@ -260,13 +259,9 @@ shinyServer(function(input, output, session) {
     #Plot distribution by region and attack type
     output$dist_region2 <- renderPlotly({
         d <- plot_gtdsub()
-        plot_ly(
-            d,
-            x = d$region,
-            type = "histogram",
-            color = d$attacktype
-        )
-        #p <- ggplot(plot_gtdsub(), aes(x =.data$region, fill=.data$attacktype))+geom_histogram(stat= "count")
+        p <- 
+            ggplot(plot_gtdsub(), aes(x =.data$region, fill=.data$attacktype))+geom_histogram(stat= "count", position=position_dodge())
+        ggplotly(p)
     })
     
     #Plot distribution by country top20

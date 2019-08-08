@@ -1,3 +1,0 @@
-Once those outliers are removed we can see that for the killed (nkill) and wounded (nwound) 75% of the values fall between 0 and 2. 
-Which makes the Interquartile range (IQR) of those variables 2.  While for the killed and wounded terrorists (nkillter and nwoundte) we see that with the ouliers removed, 100% of the values are 0. 
-Because of that we will be focusing on the number of casualties (sum of the killed and wounded without terrorists) in the further examinations of this dataset.

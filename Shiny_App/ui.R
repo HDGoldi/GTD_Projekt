@@ -109,6 +109,7 @@ body <- dashboardBody(tabItems(
                     withSpinner(plotOutput('missingdata_lite'))
                 )
             )),
+    
     tabItem(tabName = "page3",
             h2("Exploring the Dataset"),
             fluidRow(
@@ -126,7 +127,35 @@ body <- dashboardBody(tabItems(
         tabName = "page4",
         h2("Univariate Insights into Global Terror"),
         fluidRow(box(width = 12,
-                     includeMarkdown("univariat.md"))),
+                     p(
+                            "One of the major challenges with the univariate analysis of this dataset was the low quantity of metric variables. 
+                             Out of the 32 variables in the cleansed dataset only 4 of them were scaled metrical and contained enough data to be used 
+                             for a closer look at measures of location and dispersion. 
+                             But first we will take a look at the frequency distributions of some of the more interesting nominal variables:"
+                     ))),
+
+        fluidRow(
+            tabBox(
+                title = "Frequency Distributions (Reactive)",
+                width = 12,
+                tabPanel("By Year", h3(""), withSpinner(plotlyOutput("atdist_year"))),
+                tabPanel("By Region", h3(""), withSpinner(plotlyOutput("atdist_region"))),
+                tabPanel("By Attack Type", h3(""), withSpinner(plotlyOutput("atdist_attack"))),
+                tabPanel("By Weapon Type", h3(""), withSpinner(plotlyOutput("atdist_weap")))
+            )),
+            
+        fluidRow(width = 12,
+                     valueBoxOutput("attack_year"),
+                     valueBoxOutput("casual_att")
+            ),
+
+        fluidRow(box(width = 12,
+                         p(
+                             "The 4 major metric variables are the number of killed and wounded people and terrorist for each incident. 
+                              When we look at the boxplots for these values, we see that the range of the values is quite high with some
+                              extreme outliers at the top, while the median is close to 0."
+                         ))),                        
+            
         fluidRow(box(
             width = 12,
             column(width  = 3,
@@ -139,10 +168,15 @@ body <- dashboardBody(tabItems(
                    withSpinner(plotOutput("boxplot4")))
         )),
         
-        fluidRow(box(
-            width = 12,
-            includeMarkdown("univariat2.md")
-        )),
+        fluidRow(box(width = 12,
+                     p(
+                         "Once those outliers are removed we can see that for the killed (nkill) and wounded (nwound) 75% of the values 
+                         fall between 0 and 2. Which makes the Interquartile range (IQR) of those variables 2.  While for the killed and 
+                         wounded terrorists (nkillter and nwoundte) we see that with the ouliers removed, 100% of the values are 0. 
+                         Because of that we will be focusing on the number of casualties (sum of the killed and wounded without terrorists) 
+                         in the further examinations of this dataset."
+                     ))),  
+        
         fluidRow(box(
             width = 12,
             column(width  = 3,
@@ -155,25 +189,14 @@ body <- dashboardBody(tabItems(
                    withSpinner(plotOutput("boxplot8")))
         )),
         
-        fluidRow(box(
-            width = 12,
-            includeMarkdown("univariat3.md")
-        )),
-    fluidRow(width = 12,
-             valueBoxOutput("attack_year"),
-             valueBoxOutput("casual_att")),
-    fluidRow(
-        tabBox(
-            title = "Attack Count Distributions",
-            width = 12,
-            tabPanel("By Year", h3(""), withSpinner(plotlyOutput("atdist_year"))),
-            tabPanel("By Region", h3(""), withSpinner(plotlyOutput("atdist_region"))),
-            tabPanel("By Attack Type", h3(""), withSpinner(plotlyOutput("atdist_attack"))),
-            tabPanel("By Weapon Type", h3(""), withSpinner(plotlyOutput("atdist_weap")))
-        )
-        
-    )
-), 
+        fluidRow(box(width = 12,
+                     p(
+                         "As the boxplots above did already show, the observed variables are not distributed normally.
+                         This hyptohesis can be backed by running the Shapiro-Wilk Normality Test (shapiro.test) on a sample of 5000 rows.
+                         This function returns a p-value of 2.2∗10^-16 which far less than 0.05 implying that the distribution of the 
+                         data is significantly different from normal distribution. "
+                     )))
+    ),
     
     tabItem(tabName = "page5",
             h2("Multivariate Insights into Global Terror"),
@@ -211,12 +234,13 @@ body <- dashboardBody(tabItems(
                     tabPanel("Denogram for Summary Text", withSpinner(plotOutput('dendogram1')))
                 )
             )),
+    
     tabItem(tabName = "page6",
             fluidRow(box(
                 width = 12,
                 h2("Top 1000 Cities by Attack Count"),
                 withSpinner(leafletOutput("map"))
-            ),
+            )),
             fluidRow(
                 box(
                     width = 12,
@@ -225,8 +249,9 @@ body <- dashboardBody(tabItems(
                     textOutput("globeText"),
                     withSpinner(globeOutput("globe"))
                 )
-            )))
+            ))
 ))
+    
 
 dashboardPage(skin = "black",
               header,
