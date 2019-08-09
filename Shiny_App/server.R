@@ -604,4 +604,9 @@ shinyServer(function(input, output, session) {
         }
     )
     
+    output$correlation_1 <- renderPlot({
+        d <- plot_gtdsub()
+        plot_correlation(d, type = 'continuous', cor_args = list("use" = "pairwise.complete.obs"))
+    })
+    
 })

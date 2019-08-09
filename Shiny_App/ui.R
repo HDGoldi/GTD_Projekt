@@ -219,6 +219,13 @@ body <- dashboardBody(tabItems(
             ),
             fluidRow(
                 tabBox(
+                    title = "Correlation Analysis of Data (Reactive) - still needs work",
+                    width = 12,
+                    tabPanel("Correlation 1 - to be worked on", h3(""), withSpinner(plotOutput("correlation_1")))
+                ) 
+            ),
+            fluidRow(
+                tabBox(
                     title = "Detailed insights into the Killings (Reactive)",
                     width = 12,
                     tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), p(
