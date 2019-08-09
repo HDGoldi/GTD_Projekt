@@ -121,7 +121,8 @@ body <- dashboardBody(tabItems(
                 valueBoxOutput("total_wounded"),
                 valueBoxOutput("total_killed")
             ),
-            withSpinner(DT::dataTableOutput("datatable"))),
+            div(style = 'overflow-y:scroll;',
+                withSpinner(DT::dataTableOutput("datatable")))),
 
     tabItem(
         tabName = "page4",
