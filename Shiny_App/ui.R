@@ -221,9 +221,16 @@ body <- dashboardBody(tabItems(
                 tabBox(
                     title = "Detailed insights into the Killings (Reactive)",
                     width = 12,
-                    tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), includeMarkdown("killings1.md")),
-                    tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), includeMarkdown("killings2.md")),
-                    tabPanel("Countries & Years",h3("Killings per Countries and Years - size is proportional with the number of killings"), withSpinner(plotOutput('killings3')), includeMarkdown("killings3.md"))
+                    tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), p(
+                        "The abouve treemap, shows the size of the areas corresponding to each year is proportional with the number of kills in that year in the terrorist activities. We can easily see that there was a massive increase in killings in terrorist activities in the years from 2012 and in the last 3 years (2014-2016) the volume was significantly higher than in the previous years."
+                    )),
+                    tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), p(
+                        "If looking to the country split, we see that there are few countries where the number of killed people in terrorist attacks is huge. Some of them have experienced recent massive increase, like Iraq and Syria and Afganistan while others have a long history, like Peru, Colombia, India, Pakistan."
+                    )),
+                    tabPanel("Countries & Years",h3("Killings per Countries and Years - size is proportional with the number of killings"), withSpinner(plotOutput('killings3')), p(
+                        "Looking at both countries and years at the same time and also adding the number of killed people as well as the number of wounded (the color is proportional to the number of wounded).
+                        We can observe that most killings in Global terrorism were in Iraq (with maximums in 2014, 2016, 2016), Afghanistan (with peaks in 2015, 2016), Pakistan, Nigeria (with an exceptionally high death toll in 2014 and 2015). The top of bloodiest countries is as follows: Iraq, Afghanistan, Pakistan, Nigeria, India, Sri Lanka (here the top year in 1989), Colombia (here the big year in 1997). Syria (2014, 2015, 2016 being the bloodiest), El Salvador, Somalia, Yemen, Turkey, Guatemala."
+                    ))
                 )
             ),
             fluidRow(

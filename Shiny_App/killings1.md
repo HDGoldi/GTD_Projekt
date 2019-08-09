@@ -1,1 +1,0 @@
-### The abouve treemap, shows the size of the areas corresponding to each year is proportional with the number of kills in that year in the terrorist activities. We can easily see that there was a massive increase in killings in terrorist activities in the years from 2012 and in the last 3 years (2014-2016) the volume was significantly higher than in the previous years.
