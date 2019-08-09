@@ -202,7 +202,7 @@ body <- dashboardBody(tabItems(
             h2("Multivariate Insights into Global Terror"),
             fluidRow(
                 tabBox(
-                    title = "Casualty Count Distributions by different Dimensions",
+                    title = "Casualty Count Distributions by different Dimensions (Reactive)",
                     width = 12,
                     tabPanel("By Year",h3(""), withSpinner(plotlyOutput("casdist_year"))),
                     tabPanel("By Region",h3(""), withSpinner(plotlyOutput("casdist_region"))),
@@ -211,7 +211,7 @@ body <- dashboardBody(tabItems(
                 )),
             fluidRow(
                 tabBox(
-                    title = "Detailed view on Attacks by Region and Year together with Attacktype used",
+                    title = "Detailed view on Attacks by Region and Year together with Attacktype used (Reactive)",
                     width = 12,
                     tabPanel("Attacks By Attacktype & Region", h3(""), withSpinner(plotlyOutput("dist_region2"))),
                     tabPanel("Attacks By Region & Year", h3(""), withSpinner(plotlyOutput("distyear2")))
@@ -219,7 +219,7 @@ body <- dashboardBody(tabItems(
             ),
             fluidRow(
                 tabBox(
-                    title = "Killings",
+                    title = "Detailed insights into the Killings (Reactive)",
                     width = 12,
                     tabPanel("Year",h3("Overall killings per Year"), withSpinner(plotOutput('killings1')), includeMarkdown("killings1.md")),
                     tabPanel("Country",h3("Overall killings per Country"), withSpinner(plotOutput('killings2')), includeMarkdown("killings2.md")),
@@ -229,7 +229,7 @@ body <- dashboardBody(tabItems(
             fluidRow(
                 tabBox(
                     width = 12,
-                    title = "Summary - Text Insights",
+                    title = "Summary - Text Insights (Not Reactive (Missing values to high))",
                     tabPanel("Wordcloud for Summary Text", withSpinner(plotOutput('word_cloud1'))),
                     tabPanel("Denogram for Summary Text", withSpinner(plotOutput('dendogram1')))
                 )
@@ -238,14 +238,14 @@ body <- dashboardBody(tabItems(
     tabItem(tabName = "page6",
             fluidRow(box(
                 width = 12,
-                h2("Top 1000 Cities by Attack Count"),
+                h2("Top 1000 Cities by Attack Count (Reactive)"),
                 withSpinner(leafletOutput("map"))
             )),
             fluidRow(
                 box(
                     width = 12,
                     height = 1000,
-                    title = "Globe View",
+                    title = "Globe View (Reactive)",
                     textOutput("globeText"),
                     withSpinner(globeOutput("globe"))
                 )
