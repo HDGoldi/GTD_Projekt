@@ -174,6 +174,28 @@ shinyServer(function(input, output, session) {
         boxplot(data_lite$nwoundte, outline = FALSE, xlab = "nwoundte w/o outliers")
     })
     
+    #Shapiro-Test console output
+    output$shapiro1 <- renderPrint({
+        #create sample of 5000
+        ds <- sample_n(data_lite, size = 5000, replace = TRUE)
+        shapiro.test(ds$nkill)
+    })
+    output$shapiro2 <- renderPrint({
+        #create sample of 5000
+        ds <- sample_n(data_lite, size = 5000, replace = TRUE)
+        shapiro.test(ds$nkillter)
+    })
+    output$shapiro3 <- renderPrint({
+        #create sample of 5000
+        ds <- sample_n(data_lite, size = 5000, replace = TRUE)
+        shapiro.test(ds$nwound)
+    })
+    output$shapiro4 <- renderPrint({
+        #create sample of 5000
+        ds <- sample_n(data_lite, size = 5000, replace = TRUE)
+        shapiro.test(ds$nwoundte)
+    })
+    
     #Plot casualty distribution by year
     output$casdist_year <- renderPlotly({
         d <- plot_gtdsub()
@@ -220,15 +242,16 @@ shinyServer(function(input, output, session) {
     
     #Plot attack distribution by year
     output$atdist_year <- renderPlotly({
+        d <- plot_gtdsub() %>% rename(year = iyear)
         p <-
-            ggplot(plot_gtdsub(), aes(x = .data$iyear)) + geom_bar(stat = "count") + xlab("Year") + ylab("Attack Count")
+            ggplot(d, aes(x = year)) + geom_bar(stat = "count") + xlab("Year") + ylab("Attack Count")
         ggplotly(p)
     })
     
     #Plot attack distribution by region
     output$atdist_region <- renderPlotly({
         p <-
-            ggplot(plot_gtdsub(), aes(x = .data$region), colours()) + geom_bar(stat = "count") + xlab("Region") + ylab("Attack Count")
+            ggplot(plot_gtdsub(), aes(x = region), colours()) + geom_bar(stat = "count") + xlab("Region") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p, tooltip = c("y","x"))
@@ -237,9 +260,9 @@ shinyServer(function(input, output, session) {
     #Plot attack distribution by attacktype
     output$atdist_attack <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% count(d$attacktype)
+        d <- d %>% count(d$attacktype) %>% rename(attacktype = 'd$attacktype', count = 'n')
         p <-
-            ggplot(d, aes(x = .data$`d$attacktype`, y = .data$n)) + geom_bar(stat = "identity") + xlab("Attack Type") + ylab("Attack Count")
+            ggplot(d, aes(x = attacktype, y = count)) + geom_bar(stat = "identity") + xlab("Attack Type") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
@@ -248,13 +271,37 @@ shinyServer(function(input, output, session) {
     #Plot attack distribution by weaptype
     output$atdist_weap <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% count(d$weaptype)
+        d <- d %>% count(d$weaptype) %>% rename(weapontype = 'd$weaptype', count = 'n')
         p <-
-            ggplot(d, aes(x = .data$`d$weaptype`, y = .data$n)) + geom_bar(stat = "identity") + xlab("Weapon Type") + ylab("Attack Count")
+            ggplot(d, aes(x = weapontype, y = count)) + geom_bar(stat = "identity") + xlab("Weapon Type") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
     })
+    
+    #Placeholder for time series plot
+    output$time_series <- renderPlotly({
+        d <- data_lite 
+        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound))) 
+        d <- d %>% group_by(iyear) %>% summarise(terrorist_attacks_count = n(), killed = sum(casualties, na.rm = TRUE))
+        
+        newrow <- tibble(iyear=1993, terrorist_attacks_count=(5073+3458)/2-0.5)
+        
+        d2 <- d2 %>% arrange(d2$iyear)
+        d2 <- d %>% bind_rows(newrow)
+        
+        values <- d2[,2:3]
+        
+        ts1 <- ts(values, start=1970,end=2016,frequency=1)
+        
+        plot.ts(ts1)
+        
+        # ggplot(ts1, aes(x = date, y = values)) + 
+        #     geom_line(aes(color = variable), size = 1) +
+        #     scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+        #     theme_minimal()
+    })
+        
     
     #Plot distribution by region and attack type
     output$dist_region2 <- renderPlotly({

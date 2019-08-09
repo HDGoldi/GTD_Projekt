@@ -196,7 +196,18 @@ body <- dashboardBody(tabItems(
                          This hyptohesis can be backed by running the Shapiro-Wilk Normality Test (shapiro.test) on a sample of 5000 rows.
                          This function returns a p-value of 2.2∗10^-16 which far less than 0.05 implying that the distribution of the 
                          data is significantly different from normal distribution. "
-                     )))
+                     ))),
+        
+        fluidRow(box(width = 12,
+                     column(width  = 3,
+                            verbatimTextOutput("shapiro1")),
+                     column(width  = 3,
+                            verbatimTextOutput("shapiro2")),
+                     column(width  = 3,
+                            verbatimTextOutput("shapiro3")),
+                     column(width  = 3,
+                            verbatimTextOutput("shapiro4"))
+                     ))
     ),
     
     tabItem(tabName = "page5",
