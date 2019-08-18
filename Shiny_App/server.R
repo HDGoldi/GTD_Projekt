@@ -20,10 +20,8 @@ shinyServer(function(input, output, session) {
     data_lite <- readRDS("lite_data.rds")
     data <- readRDS("raw_data.rds")
     
-    output$data_explorer <- DT::renderDataTable(
-        data_lite,
-        options = list(scrollX = TRUE)
-            )
+    output$data_explorer <- DT::renderDataTable(data_lite,
+                                                options = list(scrollX = TRUE))
     
     #data explorer UI
     output$yearSelection <- renderUI({
@@ -76,15 +74,14 @@ shinyServer(function(input, output, session) {
     })
     
     plot_gtdsub <- reactive({
-        
         #filter for selected regions
-        gtd_sub <- data_lite[data_lite$region %in% input$region,]
+        gtd_sub <- data_lite[data_lite$region %in% input$region, ]
         
         #filter for selected countries
-        gtd_sub <- gtd_sub[gtd_sub$country %in% input$country,]
+        gtd_sub <- gtd_sub[gtd_sub$country %in% input$country, ]
         
         #filter for selected attack types
-        gtd_sub <- gtd_sub[gtd_sub$attacktype %in% input$attack,]
+        gtd_sub <- gtd_sub[gtd_sub$attacktype %in% input$attack, ]
         
         #filter for selected time period
         gtd_sub <-
@@ -107,7 +104,7 @@ shinyServer(function(input, output, session) {
     
     observe({
         input$tabitems
-
+        
         updateSliderInput(
             session = session,
             inputId = "year",
@@ -164,15 +161,21 @@ shinyServer(function(input, output, session) {
     })
     
     output$boxplot6 <- renderPlot({
-        boxplot(data_lite$nkillter, outline = FALSE, xlab = "nkillter w/o outliers")
+        boxplot(data_lite$nkillter,
+                outline = FALSE,
+                xlab = "nkillter w/o outliers")
     })
     
     output$boxplot7 <- renderPlot({
-        boxplot(data_lite$nwound, outline = FALSE, xlab = "nwound w/o outliers")
+        boxplot(data_lite$nwound,
+                outline = FALSE,
+                xlab = "nwound w/o outliers")
     })
     
     output$boxplot8 <- renderPlot({
-        boxplot(data_lite$nwoundte, outline = FALSE, xlab = "nwoundte w/o outliers")
+        boxplot(data_lite$nwoundte,
+                outline = FALSE,
+                xlab = "nwoundte w/o outliers")
     })
     
     #Shapiro-Test console output
@@ -205,16 +208,16 @@ shinyServer(function(input, output, session) {
     
     #Mode console output
     output$mode1 <- renderPrint({
-        paste("Mode nkill:",getmode(data_lite$nkill))
+        paste("Mode nkill:", getmode(data_lite$nkill))
     })
     output$mode2 <- renderPrint({
-        paste("Mode nkillter:",getmode(data_lite$nkillter))
+        paste("Mode nkillter:", getmode(data_lite$nkillter))
     })
     output$mode3 <- renderPrint({
-        paste("Mode nwound:",getmode(data_lite$nwound))
+        paste("Mode nwound:", getmode(data_lite$nwound))
     })
     output$mode4 <- renderPrint({
-        paste("Mode nwoundter:",getmode(data_lite$nwoundte))
+        paste("Mode nwoundter:", getmode(data_lite$nwoundte))
     })
     
     
@@ -222,20 +225,44 @@ shinyServer(function(input, output, session) {
     #Plot casualty distribution by year
     output$casdist_year <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- setNames(aggregate(d$casualties, by=list(d$iyear), sum, na.rm = T),c("iyear","casualties"))
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <-
+            setNames(aggregate(
+                d$casualties,
+                by = list(d$iyear),
+                sum,
+                na.rm = T
+            ),
+            c("iyear", "casualties"))
         
         p1 <-
             ggplot(d, aes(x = .data$iyear, .data$casualties)) + geom_bar(stat = "identity")
-
+        
         ggplotly(p1)
     })
     
     #Plot casualty distribution by region
     output$casdist_region <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- setNames(aggregate(d$casualties, by=list(d$region), sum, na.rm = T),c("region","casualties"))
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <-
+            setNames(aggregate(
+                d$casualties,
+                by = list(d$region),
+                sum,
+                na.rm = T
+            ),
+            c("region", "casualties"))
         
         p1 <-
             ggplot(d, aes(x = .data$region, .data$casualties)) + geom_bar(stat = "identity")
@@ -247,8 +274,22 @@ shinyServer(function(input, output, session) {
     #Plot casualty distribution by attacktype
     output$casdist_attack <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- setNames(aggregate(d$casualties, by=list(d$attacktype), sum, na.rm = T),c("attacktype","casualties"))
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <-
+            setNames(
+                aggregate(
+                    d$casualties,
+                    by = list(d$attacktype),
+                    sum,
+                    na.rm = T
+                ),
+                c("attacktype", "casualties")
+            )
         
         p1 <-
             ggplot(d, aes(x = .data$attacktype, .data$casualties)) + geom_bar(stat = "identity")
@@ -260,8 +301,22 @@ shinyServer(function(input, output, session) {
     #Plot casualty distribution by weaptype
     output$casdist_weap <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- setNames(aggregate(d$casualties, by=list(d$weaptype), sum, na.rm = T),c("weaptype","casualties"))
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <-
+            setNames(
+                aggregate(
+                    d$casualties,
+                    by = list(d$weaptype),
+                    sum,
+                    na.rm = T
+                ),
+                c("weaptype", "casualties")
+            )
         
         p1 <-
             ggplot(d, aes(x = .data$weaptype, .data$casualties)) + geom_bar(stat = "identity")
@@ -284,13 +339,14 @@ shinyServer(function(input, output, session) {
             ggplot(plot_gtdsub(), aes(x = region), colours()) + geom_bar(stat = "count") + xlab("Region") + ylab("Attack Count")
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-        ggplotly(p, tooltip = c("y","x"))
+        ggplotly(p, tooltip = c("y", "x"))
     })
     
     #Plot attack distribution by attacktype
     output$atdist_attack <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% count(d$attacktype) %>% rename(attacktype = 'd$attacktype', count = 'n')
+        d <-
+            d %>% count(d$attacktype) %>% rename(attacktype = 'd$attacktype', count = 'n')
         p <-
             ggplot(d, aes(x = attacktype, y = count)) + geom_bar(stat = "identity") + xlab("Attack Type") + ylab("Attack Count")
         p <-
@@ -301,7 +357,8 @@ shinyServer(function(input, output, session) {
     #Plot attack distribution by weaptype
     output$atdist_weap <- renderPlotly({
         d <- plot_gtdsub()
-        d <- d %>% count(d$weaptype) %>% rename(weapontype = 'd$weaptype', count = 'n')
+        d <-
+            d %>% count(d$weaptype) %>% rename(weapontype = 'd$weaptype', count = 'n')
         p <-
             ggplot(d, aes(x = weapontype, y = count)) + geom_bar(stat = "identity") + xlab("Weapon Type") + ylab("Attack Count")
         p <-
@@ -311,28 +368,44 @@ shinyServer(function(input, output, session) {
     
     #Placeholder for time series plot
     output$time_series <- renderPlotly({
-        d <- data_lite 
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound))) 
-        d <- d %>% group_by(iyear) %>% summarise(terrorist_attacks_count = n(), killed = sum(casualties, na.rm = TRUE))
+        d <- data_lite
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <-
+            d %>% group_by(iyear) %>% summarise(
+                terrorist_attacks_count = n(),
+                killed = sum(casualties, na.rm = TRUE)
+            )
         
-        newrow <- tibble(iyear=1993, terrorist_attacks_count=(5073+3458)/2-0.5)
+        newrow <-
+            tibble(iyear = 1993,
+                   terrorist_attacks_count = (5073 + 3458) / 2 - 0.5)
         
         d2 <- d2 %>% arrange(d2$iyear)
         d2 <- d %>% bind_rows(newrow)
         
-        values <- d2[,2:3]
+        values <- d2[, 2:3]
         
-        ts1 <- ts(values, start=1970,end=2016,frequency=1)
-
+        ts1 <- ts(values,
+                  start = 1970,
+                  end = 2016,
+                  frequency = 1)
+        
         ggplotly(ts_ggplot(ts1))
     })
-        
+    
     
     #Plot distribution by region and attack type
     output$dist_region2 <- renderPlotly({
         d <- plot_gtdsub()
-        p <- 
-            ggplot(plot_gtdsub(), aes(x =.data$region, fill=.data$attacktype))+geom_histogram(stat= "count", position=position_dodge())
+        p <-
+            ggplot(plot_gtdsub(),
+                   aes(x = .data$region, fill = .data$attacktype)) + geom_histogram(stat = "count", position =
+                                                                                        position_dodge())
         p <-
             p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
@@ -343,7 +416,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$country)
         d <- arrange(d, desc(n))
-        d <- d[1:20,]
+        d <- d[1:20, ]
         p <-
             ggplot(d, aes(
                 x = reorder(.data$'d$country', .data$n),
@@ -358,7 +431,7 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         d <- d %>% count(d$gname)
         d <- arrange(d, desc(n))
-        d <- d[2:21, ] #removing unknown groups
+        d <- d[2:21,] #removing unknown groups
         p <-
             ggplot(d, aes(x = reorder(.data$`d$gname`, d$n), y = .data$n)) + geom_bar(stat = "identity") +
             coord_flip()
@@ -388,8 +461,13 @@ shinyServer(function(input, output, session) {
     
     output$casual_att <- renderValueBox({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- d[!is.na(d$casualties),]
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <- d[!is.na(d$casualties), ]
         
         sd <- round(sd(d$casualties), 1)
         
@@ -408,7 +486,12 @@ shinyServer(function(input, output, session) {
     
     output$map <- renderLeaflet({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
         d <-
             d[c('latitude',
                 'longitude',
@@ -418,12 +501,12 @@ shinyServer(function(input, output, session) {
         dist_city <- distinct(d, d$city, .keep_all = TRUE)
         d2 <- d %>% count(city) %>% group_by(city)
         d2 <- d2 %>% arrange(desc(n))
-        d2 <- d2[-grep("Unknown", d2$city),]
+        d2 <- d2[-grep("Unknown", d2$city), ]
         d2 <- left_join(d2, dist_city, by = "city")
-        d2 <- d2[!is.na(d2$latitude) & !is.na(d2$longitude),]
+        d2 <- d2[!is.na(d2$latitude) & !is.na(d2$longitude), ]
         d2 <-
             d2 %>% select(city, country, n, latitude, longitude) %>% rename(attackcount = n)
-        d <-  d2[1:1000,]
+        d <-  d2[1:1000, ]
         
         gtd_map <- d
         
@@ -444,20 +527,31 @@ shinyServer(function(input, output, session) {
     
     output$globe <- renderGlobe({
         d <- plot_gtdsub()
-        d <- d %>% mutate(casualties = ifelse(is.na(d$nkill), ifelse(is.na(d$nwound), 0, d$nwound), ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)))
-        d <- d[!is.na(d$latitude) & !is.na(d$longitude), ]
-        d <- d[!is.na(d$casualties), ]
+        d <-
+            d %>% mutate(casualties = ifelse(
+                is.na(d$nkill),
+                ifelse(is.na(d$nwound), 0, d$nwound),
+                ifelse(is.na(d$nwound), d$nkill, d$nkill + d$nwound)
+            ))
+        d <- d[!is.na(d$latitude) & !is.na(d$longitude),]
+        d <- d[!is.na(d$casualties),]
         d <-
             d %>% mutate(size = (d$casualties / max(d$casualties)) * 100)
         d <- sample_n(d, 1000, replace = TRUE)
         
         output$globeText <- renderText({
-            paste("The attacks of the depicted dataset contain attacks in ",
-                length(unique(d$country)),"countries",
+            paste(
+                "The attacks of the depicted dataset contain attacks in ",
+                length(unique(d$country)),
+                "countries",
                 "with a total number of",
-                sum(d$nkill, na.rm = TRUE),"people killed and",
-                sum(d$nwound, na.rm = TRUE), "people wounded",
-                " (sum of casualties: ", sum(d$casualties),")."
+                sum(d$nkill, na.rm = TRUE),
+                "people killed and",
+                sum(d$nwound, na.rm = TRUE),
+                "people wounded",
+                " (sum of casualties: ",
+                sum(d$casualties),
+                ")."
             )
         })
         d[, c("latitude", "longitude", "size")]
@@ -465,16 +559,16 @@ shinyServer(function(input, output, session) {
     
     
     output$missingdata_lite <- renderPlot(#height = 700,
-                                         # width = "auto",
-                                          {
-                                              plot_missing(data_lite)
-                                          })
+        # width = "auto",
+        {
+            plot_missing(data_lite)
+        })
     
     output$missingdata <- renderPlot(#height = 700,
-                                     #width = "auto",
-                                     {
-                                         plot_missing(data)
-                                     })
+        #width = "auto",
+        {
+            plot_missing(data)
+        })
     
     
     output$killings1 <- renderPlot({
@@ -680,7 +774,9 @@ shinyServer(function(input, output, session) {
     
     output$correlation_1 <- renderPlot({
         d <- plot_gtdsub()
-        plot_correlation(d, type = 'continuous', cor_args = list("use" = "pairwise.complete.obs"))
+        plot_correlation(d,
+                         type = 'continuous',
+                         cor_args = list("use" = "pairwise.complete.obs"))
     })
     
 })
