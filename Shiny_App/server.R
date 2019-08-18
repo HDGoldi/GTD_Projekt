@@ -13,6 +13,7 @@ library(leaflet)
 library(plotly)
 library(DataExplorer)
 library(shinyGlobe)
+library(tsbox)
 
 
 shinyServer(function(input, output, session) {
@@ -196,6 +197,28 @@ shinyServer(function(input, output, session) {
         shapiro.test(ds$nwoundte)
     })
     
+    # function to get the mode.
+    getmode <- function(v) {
+        uniqv <- unique(v)
+        uniqv[which.max(tabulate(match(v, uniqv)))]
+    }
+    
+    #Mode console output
+    output$mode1 <- renderPrint({
+        paste("Mode nkill:",getmode(data_lite$nkill))
+    })
+    output$mode2 <- renderPrint({
+        paste("Mode nkillter:",getmode(data_lite$nkillter))
+    })
+    output$mode3 <- renderPrint({
+        paste("Mode nwound:",getmode(data_lite$nwound))
+    })
+    output$mode4 <- renderPrint({
+        paste("Mode nwoundter:",getmode(data_lite$nwoundte))
+    })
+    
+    
+    
     #Plot casualty distribution by year
     output$casdist_year <- renderPlotly({
         d <- plot_gtdsub()
@@ -204,6 +227,7 @@ shinyServer(function(input, output, session) {
         
         p1 <-
             ggplot(d, aes(x = .data$iyear, .data$casualties)) + geom_bar(stat = "identity")
+
         ggplotly(p1)
     })
     
@@ -215,6 +239,8 @@ shinyServer(function(input, output, session) {
         
         p1 <-
             ggplot(d, aes(x = .data$region, .data$casualties)) + geom_bar(stat = "identity")
+        p1 <-
+            p1 + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p1)
     })
     
@@ -226,6 +252,8 @@ shinyServer(function(input, output, session) {
         
         p1 <-
             ggplot(d, aes(x = .data$attacktype, .data$casualties)) + geom_bar(stat = "identity")
+        p1 <-
+            p1 + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p1)
     })
     
@@ -237,6 +265,8 @@ shinyServer(function(input, output, session) {
         
         p1 <-
             ggplot(d, aes(x = .data$weaptype, .data$casualties)) + geom_bar(stat = "identity")
+        p1 <-
+            p1 + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p1)
     })
     
@@ -293,13 +323,8 @@ shinyServer(function(input, output, session) {
         values <- d2[,2:3]
         
         ts1 <- ts(values, start=1970,end=2016,frequency=1)
-        
-        plot.ts(ts1)
-        
-        # ggplot(ts1, aes(x = date, y = values)) + 
-        #     geom_line(aes(color = variable), size = 1) +
-        #     scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-        #     theme_minimal()
+
+        ggplotly(ts_ggplot(ts1))
     })
         
     
@@ -308,6 +333,8 @@ shinyServer(function(input, output, session) {
         d <- plot_gtdsub()
         p <- 
             ggplot(plot_gtdsub(), aes(x =.data$region, fill=.data$attacktype))+geom_histogram(stat= "count", position=position_dodge())
+        p <-
+            p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
         ggplotly(p)
     })
     
@@ -425,12 +452,12 @@ shinyServer(function(input, output, session) {
         d <- sample_n(d, 1000, replace = TRUE)
         
         output$globeText <- renderText({
-            paste(
-                "Killed:",
-                sum(d$nkill, na.rm = TRUE),
-                " - ",
-                "Wounded:",
-                sum(d$nwound, na.rm = TRUE)
+            paste("The attacks of the depicted dataset contain attacks in ",
+                length(unique(d$country)),"countries",
+                "with a total number of",
+                sum(d$nkill, na.rm = TRUE),"people killed and",
+                sum(d$nwound, na.rm = TRUE), "people wounded",
+                " (sum of casualties: ", sum(d$casualties),")."
             )
         })
         d[, c("latitude", "longitude", "size")]

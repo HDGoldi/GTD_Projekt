@@ -44,9 +44,17 @@ sidebar <- dashboardSidebar(
 )
 
 
-body <- dashboardBody(tabItems(
+body <- dashboardBody(
+    
+    tabItems(
     tabItem(tabName = "page1",
+            fluidRow(align = "center",
+                ("This Shiny application has been developed by Jan Sulaiman and Robin Fauerbach as part of the course 'Business Analytics: 
+                                Anwendungsentwicklung' at the University of Aalen. - 09/2019")
+            ),
+            
             h2("Overview & Table of Contents"),
+
             fluidRow(
                 box(
                     width = 12,
@@ -66,7 +74,7 @@ body <- dashboardBody(tabItems(
                     tags$ul(
                         tags$li("Time period: 1970-2017, except 1993"),
                         tags$li("Unit of analysis: Attack"),
-                        tags$li("Variables: >100 variables on location, tactics, perpetrators, targets, and outcomes"),
+                        tags$li("Variables: >100 variables on location, tactics, perpetrators, targets and outcomes"),
                         tags$li("Sources: Unclassified media articles.")
                     )
                     
@@ -149,13 +157,23 @@ body <- dashboardBody(tabItems(
                      valueBoxOutput("attack_year"),
                      valueBoxOutput("casual_att")
             ),
+        
+        fluidRow(box(
+                title = "Time Series for No. of Killed & Attack Counts",    
+                width = 12,
+                     withSpinner(plotlyOutput("time_series")))
+                ),
 
         fluidRow(box(width = 12,
                          p(
                              "The 4 major metric variables are the number of killed and wounded people and terrorist for each incident. 
                               When we look at the boxplots for these values, we see that the range of the values is quite high with some
                               extreme outliers at the top, while the median is close to 0."
-                         ))),                        
+                         ),
+                        p(
+                            "As it would be expected from these plots, also the mode (the value that occurs most often) is 0 for all four variables."
+                        )
+                    )),  
             
         fluidRow(box(
             width = 12,
@@ -169,6 +187,18 @@ body <- dashboardBody(tabItems(
                    withSpinner(plotOutput("boxplot4")))
         )),
         
+        fluidRow(box(
+            width = 12,
+            column(width  = 3,
+                   verbatimTextOutput("mode1")),
+            column(width  = 3,
+                   verbatimTextOutput("mode2")),
+            column(width  = 3,
+                   verbatimTextOutput("mode3")),
+            column(width  = 3,
+                   verbatimTextOutput("mode4"))
+        )),
+        
         fluidRow(box(width = 12,
                      p(
                          "Once those outliers are removed we can see that for the killed (nkill) and wounded (nwound) 75% of the values 
@@ -176,7 +206,8 @@ body <- dashboardBody(tabItems(
                          wounded terrorists (nkillter and nwoundte) we see that with the ouliers removed, 100% of the values are 0. 
                          Because of that we will be focusing on the number of casualties (sum of the killed and wounded without terrorists) 
                          in the further examinations of this dataset."
-                     ))),  
+                         )
+                     )),  
         
         fluidRow(box(
             width = 12,
@@ -188,7 +219,7 @@ body <- dashboardBody(tabItems(
                    withSpinner(plotOutput("boxplot7"))),
             column(width  = 3,
                    withSpinner(plotOutput("boxplot8")))
-        )),
+                )),
         
         fluidRow(box(width = 12,
                      p(
@@ -196,7 +227,8 @@ body <- dashboardBody(tabItems(
                          This hyptohesis can be backed by running the Shapiro-Wilk Normality Test (shapiro.test) on a sample of 5000 rows.
                          This function returns a p-value of 2.2∗10^-16 which far less than 0.05 implying that the distribution of the 
                          data is significantly different from normal distribution. "
-                     ))),
+                    )
+                )),
         
         fluidRow(box(width = 12,
                      column(width  = 3,
@@ -254,6 +286,7 @@ body <- dashboardBody(tabItems(
             ),
             fluidRow(
                 tabBox(
+                    height = 600,
                     width = 12,
                     title = "Summary - Text Insights (Not Reactive (Missing values to high))",
                     tabPanel("Wordcloud for Summary Text", withSpinner(plotOutput('word_cloud1'))),
@@ -262,16 +295,22 @@ body <- dashboardBody(tabItems(
             )),
     
     tabItem(tabName = "page6",
+            h2("Geospatial Insights into Global Terror"),
             fluidRow(box(
                 width = 12,
-                h2("Top 1000 Cities by Attack Count (Reactive)"),
+                title = "Map View: Top 1000 Cities by Attack Count (Reactive)",
+                p("This leaflet map shows the top 1000 cities (based on the data selection) based on the number of attacks. 
+                The attack count is visualized as the radius of the circle marker."),
                 withSpinner(leafletOutput("map"))
             )),
             fluidRow(
                 box(
                     width = 12,
-                    height = 1000,
-                    title = "Globe View (Reactive)",
+                    height = 1100,
+                    title = "Globe View: Casualty Counts by Attack (Reactive)",
+                    p("This 3D globe picks a sample of 1000 attacks based on the data filters set and visualizes the number of casualties as a 3D bar.
+                      A sample size of 1000 has been picked for performance reasons."),
+                    
                     textOutput("globeText"),
                     withSpinner(globeOutput("globe"))
                 )
