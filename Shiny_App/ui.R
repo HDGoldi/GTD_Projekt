@@ -6,6 +6,7 @@ library(markdown)
 library(plotly)
 library(leaflet)
 library(shinyGlobe)
+library(tippy)
 
 header <- dashboardHeader(title = "Global Terrorism Database",
                           titleWidth = 300)
@@ -37,7 +38,7 @@ sidebar <- dashboardSidebar(
         ),
         
         withSpinner(uiOutput("yearSelection")),
-        uiOutput("regionSelection"),
+       uiOutput("regionSelection"),
         uiOutput("countrySelection"),
         uiOutput("attackSelection")
     )
@@ -302,28 +303,35 @@ body <- dashboardBody(tabItems(
                 tabPanel(
                     "Year",
                     h3("Overall killings per Year"),
-                    withSpinner(plotOutput('killings1')),
+                   p(
+                       "The following treemap shows the total killings of all recorded attacks per year. The Size of the area is proportional to the total number of murders in that respective year."
+                   ),
+                     withSpinner(plotOutput('killings1')),
                     p(
-                        "The abouve treemap, shows the size of the areas corresponding to each year is proportional with the number of kills in that year in the terrorist activities. We can easily see that there was a massive increase in killings in terrorist activities in the years from 2012 and in the last 3 years (2014-2016) the volume was significantly higher than in the previous years."
+                        "We can see that there was a massive increase in killings in terrorist activities in the years from 2012 and the last three years (2014-2016) the volume was significantly higher than in the previous years."
                     )
                 ),
                 tabPanel(
                     "Country",
                     h3("Overall killings per Country"),
+                    p(
+                        "The following treemap shows the total killings of all recorded attacks per country. The size of the area is proportional to the total number of murders in that respective country."
+                    ),
                     withSpinner(plotOutput('killings2')),
                     p(
-                        "If looking to the country split, we see that there are few countries where the number of killed people in terrorist attacks is huge. Some of them have experienced recent massive increase, like Iraq and Syria and Afganistan while others have a long history, like Peru, Colombia, India, Pakistan."
+                        "It's quite pressing that there are few countries where the number of killed people in terrorist attacks is enormous compared to the other countries. Some of them have experienced recent massive increase, like Iraq and Syria and Afganistan while others have a long history, like Peru, Colombia, India, Pakistan."
                     )
                 ),
                 tabPanel(
                     "Countries & Years",
-                    h3(
-                        "Killings per Countries and Years - size is proportional with the number of killings"
+                    h3("Killings per Countries and Years"),
+                    p(
+                        "The following treemap shows the total killings of all recorded attacks per country and year. The size of the area is proportional to the total number of murders in that respective country per year."
                     ),
                     withSpinner(plotOutput('killings3')),
                     p(
-                        "Looking at both countries and years at the same time and also adding the number of killed people as well as the number of wounded (the color is proportional to the number of wounded).
-                        We can observe that most killings in Global terrorism were in Iraq (with maximums in 2014, 2016, 2016), Afghanistan (with peaks in 2015, 2016), Pakistan, Nigeria (with an exceptionally high death toll in 2014 and 2015). The top of bloodiest countries is as follows: Iraq, Afghanistan, Pakistan, Nigeria, India, Sri Lanka (here the top year in 1989), Colombia (here the big year in 1997). Syria (2014, 2015, 2016 being the bloodiest), El Salvador, Somalia, Yemen, Turkey, Guatemala."
+                        "The color of the areas is proportional to the total number of wounded. Looking at both countries and years at the same time with the total number of killings vs. the total number of wounded, we can discover some more insights. 
+                            We can observe that most killings in Global terrorism were in Iraq (with maximums in 2014, 2016, 2016), Afghanistan (with peaks in 2015, 2016), Pakistan, Nigeria (with an exceptionally high death toll in 2014 and 2015). The top of bloodiest countries is as follows: Iraq, Afghanistan, Pakistan, Nigeria, India, Sri Lanka (here the top year in 1989), Colombia (here the big year in 1997). Syria (2014, 2015, 2016 being the bloodiest), El Salvador, Somalia, Yemen, Turkey, Guatemala."
                     )
                 )
             )
@@ -333,8 +341,22 @@ body <- dashboardBody(tabItems(
                 height = 600,
                 width = 12,
                 title = "Summary - Text Insights (Not Reactive (Missing values to high))",
-                tabPanel("Wordcloud for Summary Text", withSpinner(plotOutput('word_cloud1'))),
-                tabPanel("Denogram for Summary Text", withSpinner(plotOutput('dendogram1')))
+                tabPanel("Wordcloud for Summary Text",
+                         p(
+                             "We are performing text analysis on the summary field, the field that describes the terrorist event in words. Due to the very large size of the missing and wrong entries, we will subsample the data, extracting randomly only 1% of the summary text entries."
+                         ),
+                         withSpinner(plotOutput('word_cloud1')),
+                         p(
+                             "We can see that the most frequent concepts used are claimed, group, incident, attack, killed, assailants, detonated, irak, explosive, device, police."
+                         )),
+                tabPanel("Denogram for Summary Text",
+                         p(
+                             "Looking at a cluster dendrogram showing the relations between the frequent concepts used in the summary description:"
+                         ),
+                         withSpinner(plotOutput('dendogram1')),
+                         p(
+                             "We can see here how the main concepts are connected. For example, group is in close relationship with two sub-trees, {detonated, {killed,{claimed,responsibility}}}."
+                         ))
             )
         )
     ),

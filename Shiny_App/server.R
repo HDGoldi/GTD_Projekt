@@ -385,7 +385,7 @@ shinyServer(function(input, output, session) {
             tibble(iyear = 1993,
                    terrorist_attacks_count = (5073 + 3458) / 2 - 0.5)
         
-        d2 <- d2 %>% arrange(d2$iyear)
+        d2 <- d %>% arrange(d$iyear)
         d2 <- d %>% bind_rows(newrow)
         
         values <- d2[, 2:3]
@@ -778,5 +778,6 @@ shinyServer(function(input, output, session) {
                          type = 'continuous',
                          cor_args = list("use" = "pairwise.complete.obs"))
     })
+    
     
 })
