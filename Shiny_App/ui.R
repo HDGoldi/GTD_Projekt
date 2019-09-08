@@ -127,6 +127,9 @@ body <- dashboardBody(tabItems(
     tabItem(
         tabName = "page3",
         h2("Exploring the Dataset"),
+        p(
+            "Here are the most important stats about the selected Dataset. Each figure is calculated according to the overall collection criterias on the left."
+        ),
         fluidRow(
             width = 12,
             valueBoxOutput("total_values"),
@@ -136,6 +139,7 @@ body <- dashboardBody(tabItems(
             valueBoxOutput("total_wounded"),
             valueBoxOutput("total_killed")
         ),
+        p("The following Datatable is giving insights into the raw data and the structure of the selected data."),
         div(style = 'overflow-y:scroll;',
             withSpinner(DT::dataTableOutput("datatable")))
     ),
@@ -263,6 +267,13 @@ body <- dashboardBody(tabItems(
     tabItem(
         tabName = "page5",
         h2("Multivariate Insights into Global Terror"),
+        fluidRow(box(
+            width = 12,
+            p(
+                "The following section is looking into the dataset by considering more than one dimension and are therefore called multivariate analysis. As the primary dimension of the dataset is the amount of casualty per attack, this is used for a more in-depth look alongside the year, region, attack type, and weapon type. 
+                    The following diagrams show the different distributions of casualty within the dimensions:"
+            )
+        )),
         fluidRow(
             tabBox(
                 title = "Casualty Count Distributions by different Dimensions (Reactive)",
@@ -285,12 +296,18 @@ body <- dashboardBody(tabItems(
                 tabPanel("Attacks By Region & Year", h3(""), withSpinner(plotlyOutput("distyear2")))
             )
         ),
+        fluidRow(box(
+            width = 12,
+            p(
+                "Next, we are looking into the correlation of the data to each other by using a correlation matrix of the most critical dimensions. The matrix is giving us different insights into the relationship of two aspects to each other. One example is the claimed, yes or no, to the number of wounded people. The high relation can be explained as in most bigger attacked the group or activist behind it wants to have as much as possible public attention to get support for the own cause and therefore ensures the attack is claimed. But as we can see, there are also other correlations:"
+            )
+        )),
         fluidRow(
             tabBox(
-                title = "Correlation Analysis of Data (Reactive) - still needs work",
+                title = "Correlation Analysis of Data (Reactive)",
                 width = 12,
                 tabPanel(
-                    "Correlation 1 - to be worked on",
+                    "Correlation Matrics - Basic",
                     h3(""),
                     withSpinner(plotOutput("correlation_1"))
                 )
